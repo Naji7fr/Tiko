@@ -19,6 +19,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'voornaam',
+        'achternaam',
         'email',
         'password',
         'role',
@@ -48,19 +50,24 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Check if user is admin or praktijkmanager
-     */
-    public function isAdmin(): bool
+    public static function roleLabel(string $role): string
     {
-        return in_array($this->role, ['admin', 'praktijkmanager']);
+        return [
+            'admin'                 => 'Admin',
+            'manager'               => 'Manager',
+            'financieel_medewerker' => 'Financieel Medewerker',
+            'reisadviseur'          => 'Reisadviseur',
+            'klant'                 => 'Klant',
+        ][$role] ?? ucfirst($role);
     }
 
-    /**
-     * Check if user is patient
-     */
-    public function isPatient(): bool
+    public function isAdmin(): bool
     {
-        return $this->role === 'patient';
+        return in_array($this->role, ['admin', 'manager']);
+    }
+
+    public function isKlant(): bool
+    {
+        return $this->role === 'klant';
     }
 }

@@ -73,14 +73,23 @@
                                     @php
                                         $roleColors = [
                                             'admin' => 'danger',
-                                            'tandarts' => 'primary',
-                                            'assistent' => 'info',
-                                            'patient' => 'success'
+                                            'manager' => 'warning',
+                                            'financieel_medewerker' => 'primary',
+                                            'reisadviseur' => 'info',
+                                            'klant' => 'success',
+                                        ];
+                                        $roleLabels = [
+                                            'admin' => 'Admin',
+                                            'manager' => 'Manager',
+                                            'financieel_medewerker' => 'Financieel Medewerker',
+                                            'reisadviseur' => 'Reisadviseur',
+                                            'klant' => 'Klant',
                                         ];
                                         $roleColor = $roleColors[$account->role] ?? 'secondary';
+                                        $roleLabel = $roleLabels[$account->role] ?? ucfirst($account->role);
                                     @endphp
                                     <span class="badge bg-{{ $roleColor }}">
-                                        <i class="fas fa-user-tag me-1"></i>{{ ucfirst($account->role) }}
+                                        <i class="fas fa-user-tag me-1"></i>{{ $roleLabel }}
                                     </span>
                                 </td>
                                 <td>

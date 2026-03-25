@@ -22,6 +22,9 @@
                     <span class="badge bg-primary">{{ \App\Models\User::roleLabel($account->role) }}</span>
                 </div>
             </div>
+            @if($account->voornaam || $account->achternaam)
+            <p class="mb-2"><strong><i class="fas fa-id-card me-2"></i>Naam:</strong> {{ trim(($account->voornaam ?? '') . ' ' . ($account->achternaam ?? '')) }}</p>
+            @endif
             <p class="mb-2"><strong><i class="fas fa-envelope me-2"></i>E-mail:</strong> {{ $account->email }}</p>
             <p class="mb-2"><strong><i class="fas fa-info-circle me-2"></i>Status:</strong> {{ ucfirst($account->status ?? 'Onbekend') }}</p>
             <p class="mb-0"><strong><i class="fas fa-calendar me-2"></i>Aanmaakdatum:</strong> {{ $account->created_at->format('d-m-Y H:i') }}</p>

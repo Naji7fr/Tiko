@@ -20,15 +20,42 @@
                         
                         <div class="mb-3">
                             <label for="name" class="form-label">
-                                <i class="fas fa-user me-2"></i>Naam <span class="text-danger">*</span>
+                                <i class="fas fa-at me-2"></i>Gebruikersnaam <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" 
-                                   value="{{ old('name') }}" 
-                                   placeholder="Volledige naam..." required>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   id="name" name="name"
+                                   value="{{ old('name') }}"
+                                   placeholder="Unieke gebruikersnaam..." required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="voornaam" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Voornaam
+                                </label>
+                                <input type="text" class="form-control @error('voornaam') is-invalid @enderror"
+                                       id="voornaam" name="voornaam"
+                                       value="{{ old('voornaam') }}"
+                                       placeholder="Voornaam...">
+                                @error('voornaam')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="achternaam" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Achternaam
+                                </label>
+                                <input type="text" class="form-control @error('achternaam') is-invalid @enderror"
+                                       id="achternaam" name="achternaam"
+                                       value="{{ old('achternaam') }}"
+                                       placeholder="Achternaam...">
+                                @error('achternaam')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -62,10 +89,11 @@
                             </label>
                             <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                                 <option value="">Selecteer een rol</option>
-                                <option value="patient" {{ old('role') == 'patient' ? 'selected' : '' }}>Patiënt</option>
-                                <option value="tandarts" {{ old('role') == 'tandarts' ? 'selected' : '' }}>Tandarts</option>
-                                <option value="praktijkmanager" {{ old('role') == 'praktijkmanager' ? 'selected' : '' }}>Praktijkmanager</option>
-                                <option value="assistent" {{ old('role') == 'assistent' ? 'selected' : '' }}>Assistent</option>
+                                <option value="klant" {{ old('role') == 'klant' ? 'selected' : '' }}>Klant</option>
+                                <option value="reisadviseur" {{ old('role') == 'reisadviseur' ? 'selected' : '' }}>Reisadviseur</option>
+                                <option value="financieel_medewerker" {{ old('role') == 'financieel_medewerker' ? 'selected' : '' }}>Financieel Medewerker</option>
+                                <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Manager</option>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                             </select>
                             @error('role')
                                 <div class="invalid-feedback">{{ $message }}</div>

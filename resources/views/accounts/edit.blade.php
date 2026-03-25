@@ -9,8 +9,31 @@
         @csrf
         @method('PUT')
         <div class="mb-3">
-            <label for="name" class="form-label">Naam</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $account->name) }}" required>
+            <label for="name" class="form-label">Gebruikersnaam</label>
+            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                   id="name" name="name" value="{{ old('name', $account->name) }}" required>
+            @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="voornaam" class="form-label">Voornaam</label>
+                <input type="text" class="form-control @error('voornaam') is-invalid @enderror"
+                       id="voornaam" name="voornaam" value="{{ old('voornaam', $account->voornaam) }}">
+                @error('voornaam')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="achternaam" class="form-label">Achternaam</label>
+                <input type="text" class="form-control @error('achternaam') is-invalid @enderror"
+                       id="achternaam" name="achternaam" value="{{ old('achternaam', $account->achternaam) }}">
+                @error('achternaam')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -23,10 +46,11 @@
         <div class="mb-3">
             <label for="role" class="form-label">Rol</label>
             <select class="form-control" id="role" name="role" required>
-                <option value="patient" {{ old('role', $account->role) == 'patient' ? 'selected' : '' }}>Patiënt</option>
-                <option value="tandarts" {{ old('role', $account->role) == 'tandarts' ? 'selected' : '' }}>Tandarts</option>
-                <option value="praktijkmanager" {{ old('role', $account->role) == 'praktijkmanager' ? 'selected' : '' }}>Praktijkmanager</option>
-                <option value="assistent" {{ old('role', $account->role) == 'assistent' ? 'selected' : '' }}>Assistent</option>
+                <option value="klant" {{ old('role', $account->role) == 'klant' ? 'selected' : '' }}>Klant</option>
+                <option value="reisadviseur" {{ old('role', $account->role) == 'reisadviseur' ? 'selected' : '' }}>Reisadviseur</option>
+                <option value="financieel_medewerker" {{ old('role', $account->role) == 'financieel_medewerker' ? 'selected' : '' }}>Financieel Medewerker</option>
+                <option value="manager" {{ old('role', $account->role) == 'manager' ? 'selected' : '' }}>Manager</option>
+                <option value="admin" {{ old('role', $account->role) == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
         </div>
         <div class="mb-3">
