@@ -30,10 +30,10 @@
                 <label for="type" class="form-label">Type</label>
                 <select class="form-control" id="type" name="type" required>
                     <option value="">Selecteer type</option>
-                    <option value="Tandarts">Tandarts</option>
-                    <option value="Mondhygienist">Mondhygienist</option>
-                    <option value="Assistent">Assistent</option>
-                    <option value="Praktijkmanagement">Praktijkmanagement</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Financieel Medewerker">Financieel Medewerker</option>
+                    <option value="Reisadviseur">Reisadviseur</option>
+                    <option value="Boekingsagent">Boekingsagent</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-success">Medewerker toevoegen</button>

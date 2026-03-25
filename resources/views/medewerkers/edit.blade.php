@@ -38,10 +38,10 @@
                 <label for="type" class="form-label">Type</label>
                 <select class="form-control" id="type" name="type" required>
                     <option value="">Selecteer type</option>
-                    <option value="Tandarts" {{ old('type', $medewerker->type) == 'Tandarts' ? 'selected' : '' }}>Tandarts</option>
-                    <option value="Mondhygienist" {{ old('type', $medewerker->type) == 'Mondhygienist' ? 'selected' : '' }}>Mondhygienist</option>
-                    <option value="Assistent" {{ old('type', $medewerker->type) == 'Assistent' ? 'selected' : '' }}>Assistent</option>
-                    <option value="Praktijkmanagement" {{ old('type', $medewerker->type) == 'Praktijkmanagement' ? 'selected' : '' }}>Praktijkmanagement</option>
+                    <option value="Admin" {{ old('type', $medewerker->type) == 'Admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="Financieel Medewerker" {{ old('type', $medewerker->type) == 'Financieel Medewerker' ? 'selected' : '' }}>Financieel Medewerker</option>
+                    <option value="Reisadviseur" {{ old('type', $medewerker->type) == 'Reisadviseur' ? 'selected' : '' }}>Reisadviseur</option>
+                    <option value="Boekingsagent" {{ old('type', $medewerker->type) == 'Boekingsagent' ? 'selected' : '' }}>Boekingsagent</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-success">Opslaan</button>

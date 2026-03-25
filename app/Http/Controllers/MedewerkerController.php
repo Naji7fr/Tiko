@@ -33,15 +33,11 @@ class MedewerkerController extends Controller
     {
         try {
             // Validate the incoming request data according to the specified rules.
-            // 'naam' must be required, a string, and max 255 characters.
-            // 'email' must be required, a valid email, and unique in the medewerkers table.
-            // 'status' must be required and one of the specified values.
-            // 'type' must be required and one of the specified values.
             $validated = $request->validate([
                 'naam' => 'required|string|max:255',
                 'email' => 'required|email|unique:medewerkers,email',
                 'status' => 'required|in:Actief,Inactief,Op proef,Afwezig,Gepauzeerd',
-                'type' => 'required|in:Tandarts,Mondhygienist,Assistent,Praktijkmanagement',
+                'type' => 'required|in:Admin,Financieel Medewerker,Reisadviseur,Boekingsagent',
             ]);
 
             // Create a new Medewerker record in the database using the validated data.
@@ -101,7 +97,7 @@ class MedewerkerController extends Controller
                 'naam' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'status' => 'required|in:Actief,Inactief,Op proef,Afwezig,Gepauzeerd',
-                'type' => 'required|in:Tandarts,Mondhygienist,Assistent,Praktijkmanagement',
+                'type' => 'required|in:Admin,Financieel Medewerker,Reisadviseur,Boekingsagent',
             ]);
 
             // Check if another medewerker already has the same naam and email combination.

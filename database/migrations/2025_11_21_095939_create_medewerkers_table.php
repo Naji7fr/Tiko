@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('naam');
             $table->string('email')->unique();
             $table->enum('status', ['Actief', 'Inactief', 'Op proef', 'Afwezig', 'Gepauzeerd']);
-            $table->enum('type', ['Tandarts', 'Mondhygienist', 'Assistent', 'Praktijkmanagement']);
+            $table->enum('type', ['Admin', 'Financieel Medewerker', 'Reisadviseur', 'Boekingsagent']);
             $table->timestamps();
         });
     }
