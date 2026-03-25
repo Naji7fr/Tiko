@@ -422,6 +422,112 @@ footer hr {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
+/* Hero Booking.com style */
+.hero-booking .hero-booking-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.hero-booking .hero-booking-sub {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    margin-bottom: 1.5rem;
+}
+
+/* Search widget - Booking.com style */
+.search-widget-booking {
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.search-widget-booking .search-tabs {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    --bs-nav-tabs-link-active-bg: #fff;
+    --bs-nav-tabs-link-active-color: var(--primary-color);
+    --bs-nav-tabs-border-width: 0;
+}
+.search-widget-booking .search-tabs .nav-link {
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    border: none;
+    border-radius: 0;
+    padding: 1rem 1.25rem;
+}
+.search-widget-booking .search-tabs .nav-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+}
+.search-widget-booking .search-tabs .nav-link.active {
+    background: #fff !important;
+    color: var(--primary-color) !important;
+}
+.search-tab-content {
+    min-height: 120px;
+}
+.search-form-booking .search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: stretch;
+}
+.search-form-booking .search-field {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.75rem 1rem;
+    border-right: 1px solid var(--border-color);
+}
+.search-form-booking .search-field:first-child {
+    min-width: 220px;
+}
+.search-form-booking .search-field:last-of-type {
+    border-right: none;
+}
+.search-form-booking .search-field-dates {
+    min-width: 200px;
+}
+.search-form-booking .search-field-guests {
+    min-width: 220px;
+}
+.search-form-booking .search-field-btn {
+    flex: 0 0 auto;
+    min-width: 140px;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 0.5rem;
+}
+.search-form-booking .search-field-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+.search-form-booking .search-field-label i {
+    color: var(--primary-color);
+}
+.search-form-booking .form-control {
+    padding: 0.35rem 0;
+    font-size: 1rem;
+}
+.search-form-booking .btn-search-booking {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    width: 100%;
+}
+@media (max-width: 992px) {
+    .search-form-booking .search-row {
+        flex-direction: column;
+    }
+    .search-form-booking .search-field {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .search-form-booking .search-field-btn {
+        padding-top: 1rem;
+    }
+}
+
 /* About Section */
 .about-section {
     padding: 80px 0;
