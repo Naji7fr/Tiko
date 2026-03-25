@@ -20,14 +20,14 @@ class EnsureAdminUser extends Command
      *
      * @var string
      */
-    protected $description = 'Ensure admin user exists with email admin@jamin.nl and is active';
+    protected $description = 'Ensure admin user exists with email admin@bng.nl and is active';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $email = 'admin@jamin.nl';
+        $email = 'admin@bng.nl';
         $password = $this->option('password') ?? 'password';
 
         $user = User::updateOrCreate(
