@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'No Gaffie Clinic')</title>
+    <title>@yield('title', 'BNG')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,8 +15,8 @@
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="fas fa-tooth"></i>
-                <span>No Gaffie Clinic</span>
+                <i class="fas fa-bed"></i>
+                <span>BNG</span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -30,7 +30,7 @@
                     </li>
                     
                     @auth
-                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'praktijkmanager')
+                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
                             {{-- Admin/Praktijkmanager Menu --}}
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('medewerkers.*') ? 'active' : '' }}" href="{{ route('medewerkers.index') }}">
@@ -94,12 +94,9 @@
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i>Profiel</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Uitloggen
-                                        </button>
-                                    </form>
+                                    <a class="dropdown-item" href="{{ route('logout.get') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Uitloggen
+                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -128,14 +125,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5><i class="fas fa-tooth me-2"></i>No Gaffie Clinic</h5>
-                    <p>Uw vertrouwde tandartspraktijk sinds 2020. Wij bieden hoogwaardige mondzorg met persoonlijke aandacht voor elke patiënt.</p>
+                    <h5><i class="fas fa-bed me-2"></i>BNG</h5>
+                    <p>Uw vertrouwde boekingsplatform. Vergelijk accommodaties en vind de beste aanbiedingen, net als Booking.com.</p>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5><i class="fas fa-phone me-2"></i>Contact</h5>
                     <p>
                         <i class="fas fa-phone-alt me-2"></i>Telefoon: 012-3456789<br>
-                        <i class="fas fa-envelope me-2"></i>Email: info@nogaffieclinic.nl<br>
+                        <i class="fas fa-envelope me-2"></i>Email: info@bng.nl<br>
                         <i class="fas fa-map-marker-alt me-2"></i>Adres: Hoofdstraat 123, Amsterdam
                     </p>
                 </div>
@@ -149,9 +146,10 @@
                 </div>
             </div>
             <hr>
-            <p class="text-center mb-0">&copy; {{ date('Y') }} No Gaffie Clinic. Alle rechten voorbehouden.</p>
+            <p class="text-center mb-0">&copy; {{ date('Y') }} BNG. Alle rechten voorbehouden.</p>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

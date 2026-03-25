@@ -23,7 +23,7 @@ class CheckRole
         $user = Auth::user();
 
         // Check if user is active
-        if ($user->status !== 'actief') {
+        if (strtolower($user->status ?? '') !== 'actief') {
             Auth::logout();
             return redirect()->route('login')->with('error', 'Uw account is niet actief.');
         }

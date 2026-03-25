@@ -27,7 +27,7 @@ class LoginController extends Controller
             $user = Auth::user();
             
             // Check if user is active
-            if ($user->status !== 'actief') {
+            if (strtolower($user->status ?? '') !== 'actief') {
                 Auth::logout();
                 return back()->withErrors([
                     'email' => 'Uw account is niet actief. Neem contact op met de beheerder.',
@@ -35,7 +35,7 @@ class LoginController extends Controller
             }
 
             // Redirect based on role
-            if ($user->role === 'admin' || $user->role === 'praktijkmanager') {
+            if (in_array($user->role, ['admin', 'manager'])) {
                 return redirect()->intended(route('home'));
             } else {
                 return redirect()->intended(route('patient.dashboard'));
