@@ -129,7 +129,8 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-user me-2"></i>Patiënt</th>
+                            <th><i class="fas fa-hashtag me-2"></i>Factuur Nr.</th>
+                            <th><i class="fas fa-user me-2"></i>Klant</th>
                             <th><i class="fas fa-euro-sign me-2"></i>Bedrag</th>
                             <th><i class="fas fa-calendar-alt me-2"></i>Vervaldatum</th>
                             <th><i class="fas fa-info-circle me-2"></i>Status</th>
@@ -140,7 +141,12 @@
                     <tbody>
                         @foreach($invoices as $invoice)
                             <tr>
-                                <td data-label="Patiënt">
+                                <td data-label="Factuur Nr.">
+                                    <span class="badge bg-secondary fw-semibold">
+                                        <i class="fas fa-hashtag me-1"></i>{{ $invoice->factuurnummer }}
+                                    </span>
+                                </td>
+                                <td data-label="Klant">
                                     <div class="d-flex align-items-center">
                                         @if($invoice->patient)
                                             <div class="avatar-circle me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
@@ -148,7 +154,7 @@
                                             </div>
                                             <strong>{{ $invoice->patient->name ?? 'Onbekend' }}</strong>
                                         @else
-                                            <span class="text-muted">Geen patiënt</span>
+                                            <span class="text-muted">Geen klant</span>
                                         @endif
                                     </div>
                                 </td>

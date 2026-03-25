@@ -17,13 +17,26 @@
                 <div class="card-body p-4">
                     <form action="{{ route('facturen.store') }}" method="POST">
                         @csrf
-                        
+
+                        <div class="mb-3">
+                            <label for="factuurnummer" class="form-label">
+                                <i class="fas fa-hashtag me-2"></i>Factuur Nummer <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control @error('factuurnummer') is-invalid @enderror"
+                                   id="factuurnummer" name="factuurnummer"
+                                   value="{{ old('factuurnummer') }}"
+                                   placeholder="bijv. FACT-2026-001" required>
+                            @error('factuurnummer')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="mb-3">
                             <label for="patient_id" class="form-label">
-                                <i class="fas fa-user me-2"></i>Patiënt <span class="text-danger">*</span>
+                                <i class="fas fa-user me-2"></i>Klant <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('patient_id') is-invalid @enderror" id="patient_id" name="patient_id" required>
-                                <option value="">Selecteer een patiënt</option>
+                                <option value="">Selecteer een klant</option>
                                 @foreach($patients as $patient)
                                     <option value="{{ $patient->id }}" {{ old('patient_id') == $patient->id ? 'selected' : '' }}>
                                         {{ $patient->name }} ({{ $patient->email }})
