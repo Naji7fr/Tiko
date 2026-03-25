@@ -24,27 +24,54 @@
 
                     <form action="{{ route('register') }}" method="POST">
                         @csrf
-                        
+
                         <div class="mb-3">
                             <label for="name" class="form-label">
-                                <i class="fas fa-user me-2"></i>Naam <span class="text-danger">*</span>
+                                <i class="fas fa-at me-2"></i>Gebruikersnaam <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" 
-                                   value="{{ old('name') }}" 
-                                   placeholder="Uw volledige naam" required autofocus>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   id="name" name="name"
+                                   value="{{ old('name') }}"
+                                   placeholder="Kies een unieke gebruikersnaam" required autofocus>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="voornaam" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Voornaam <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control @error('voornaam') is-invalid @enderror"
+                                       id="voornaam" name="voornaam"
+                                       value="{{ old('voornaam') }}"
+                                       placeholder="Uw voornaam" required>
+                                @error('voornaam')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="achternaam" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Achternaam <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control @error('achternaam') is-invalid @enderror"
+                                       id="achternaam" name="achternaam"
+                                       value="{{ old('achternaam') }}"
+                                       placeholder="Uw achternaam" required>
+                                @error('achternaam')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="email" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Email <span class="text-danger">*</span>
+                                <i class="fas fa-envelope me-2"></i>E-mailadres <span class="text-danger">*</span>
                             </label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" name="email" 
-                                   value="{{ old('email') }}" 
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   id="email" name="email"
+                                   value="{{ old('email') }}"
                                    placeholder="uw@email.nl" required>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -55,26 +82,26 @@
                             <label for="password" class="form-label">
                                 <i class="fas fa-lock me-2"></i>Wachtwoord <span class="text-danger">*</span>
                             </label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" 
+                            <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                   id="password" name="password"
                                    placeholder="Minimaal 8 tekens" required>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="password_confirmation" class="form-label">
                                 <i class="fas fa-lock me-2"></i>Bevestig Wachtwoord <span class="text-danger">*</span>
                             </label>
-                            <input type="password" class="form-control" 
-                                   id="password_confirmation" name="password_confirmation" 
+                            <input type="password" class="form-control"
+                                   id="password_confirmation" name="password_confirmation"
                                    placeholder="Herhaal uw wachtwoord" required>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-plus me-2"></i>Account Aanmaken
+                                <i class="fas fa-user-plus me-2"></i>Registreren
                             </button>
                         </div>
                     </form>
