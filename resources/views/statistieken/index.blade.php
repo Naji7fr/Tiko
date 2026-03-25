@@ -27,7 +27,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
-                    <h5 class="card-title text-muted mb-2">Totaal Patiënten</h5>
+                    <h5 class="card-title text-muted mb-2">Totaal Klanten</h5>
                     <h2 class="text-primary mb-0" style="font-size: 2.5rem; font-weight: 700;">{{ $totalPatients }}</h2>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                             <i class="fas fa-user-md"></i>
                         </div>
                     </div>
-                    <h5 class="card-title text-muted mb-2">Totaal Tandartsen</h5>
+                    <h5 class="card-title text-muted mb-2">Totaal Reisadviseurs</h5>
                     <h2 class="text-success mb-0" style="font-size: 2.5rem; font-weight: 700;">{{ $totalDentists }}</h2>
                 </div>
             </div>

@@ -79,7 +79,7 @@
                                         <div>
                                             <strong>{{ $appointment->appointment_date->format('d-m-Y H:i') }}</strong>
                                             <br>
-                                            <small class="text-muted">Tandarts: {{ $appointment->dentist->name ?? 'Onbekend' }}</small>
+                                            <small class="text-muted">Reisadviseur: {{ $appointment->dentist->name ?? 'Onbekend' }}</small>
                                         </div>
                                         <span class="badge bg-primary">{{ ucfirst($appointment->status) }}</span>
                                     </div>

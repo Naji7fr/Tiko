@@ -95,9 +95,9 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="dentist_id" class="form-label">Tandarts <span class="text-danger">*</span></label>
+                        <label for="dentist_id" class="form-label">Reisadviseur <span class="text-danger">*</span></label>
                         <select class="form-select" id="dentist_id" name="dentist_id" required>
-                            <option value="">Selecteer een tandarts</option>
+                            <option value="">Selecteer een reisadviseur</option>
                             @foreach($dentists as $dentist)
                                 <option value="{{ $dentist->id }}">{{ $dentist->name }}</option>
                             @endforeach

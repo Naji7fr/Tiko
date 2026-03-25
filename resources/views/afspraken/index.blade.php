@@ -107,8 +107,8 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-user me-2"></i>Patiënt</th>
-                            <th><i class="fas fa-user-md me-2"></i>Tandarts</th>
+                            <th><i class="fas fa-user me-2"></i>Klant</th>
+                            <th><i class="fas fa-user-tie me-2"></i>Reisadviseur</th>
                             <th><i class="fas fa-calendar-alt me-2"></i>Datum & Tijd</th>
                             <th><i class="fas fa-info-circle me-2"></i>Status</th>
                             <th><i class="fas fa-sticky-note me-2"></i>Notities</th>
@@ -118,7 +118,7 @@
                     <tbody>
                         @foreach($appointments->sortBy('appointment_date') as $appointment)
                             <tr class="{{ $appointment->appointment_date->isToday() ? 'table-info' : '' }}">
-                                <td data-label="Patiënt">
+                                <td data-label="Klant">
                                     <div class="d-flex align-items-center">
                                         @if($appointment->patient)
                                             <div class="avatar-circle me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
@@ -126,11 +126,11 @@
                                             </div>
                                             <strong>{{ $appointment->patient->name ?? 'Onbekend' }}</strong>
                                         @else
-                                            <span class="text-muted">Geen patiënt</span>
+                                            <span class="text-muted">Geen klant</span>
                                         @endif
                                     </div>
                                 </td>
-                                <td data-label="Tandarts">
+                                <td data-label="Reisadviseur">
                                     <div class="d-flex align-items-center">
                                         @if($appointment->dentist)
                                             <div class="avatar-circle me-2" style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--success-color), #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.75rem;">
@@ -138,7 +138,7 @@
                                             </div>
                                             {{ $appointment->dentist->name ?? 'Onbekend' }}
                                         @else
-                                            <span class="text-muted">Geen tandarts</span>
+                                            <span class="text-muted">Geen reisadviseur</span>
                                         @endif
                                     </div>
                                 </td>

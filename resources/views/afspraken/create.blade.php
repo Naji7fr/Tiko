@@ -20,10 +20,10 @@
                         
                         <div class="mb-3">
                             <label for="patient_id" class="form-label">
-                                <i class="fas fa-user me-2"></i>Patiënt <span class="text-danger">*</span>
+                                <i class="fas fa-user me-2"></i>Klant <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('patient_id') is-invalid @enderror" id="patient_id" name="patient_id" required>
-                                <option value="">Selecteer een patiënt</option>
+                                <option value="">Selecteer een klant</option>
                                 @foreach($patients as $patient)
                                     <option value="{{ $patient->id }}" {{ old('patient_id') == $patient->id ? 'selected' : '' }}>
                                         {{ $patient->name }} ({{ $patient->email }})
@@ -37,10 +37,10 @@
 
                         <div class="mb-3">
                             <label for="dentist_id" class="form-label">
-                                <i class="fas fa-user-md me-2"></i>Tandarts <span class="text-danger">*</span>
+                                <i class="fas fa-user-tie me-2"></i>Reisadviseur <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('dentist_id') is-invalid @enderror" id="dentist_id" name="dentist_id" required>
-                                <option value="">Selecteer een tandarts</option>
+                                <option value="">Selecteer een reisadviseur</option>
                                 @foreach($dentists as $dentist)
                                     <option value="{{ $dentist->id }}" {{ old('dentist_id') == $dentist->id ? 'selected' : '' }}>
                                         {{ $dentist->name }} ({{ $dentist->email }})
