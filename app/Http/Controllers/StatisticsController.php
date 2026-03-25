@@ -11,8 +11,8 @@ class StatisticsController extends Controller
 {
     public function index()
     {
-        $totalPatients = User::where('role', 'patient')->count();
-        $totalDentists = User::where('role', 'tandarts')->count();
+        $totalPatients = User::where('role', 'klant')->count();
+        $totalDentists = User::where('role', 'reisadviseur')->count();
         $totalAppointments = Appointment::count();
         $totalInvoices = Invoice::count();
         $paidInvoices = Invoice::where('status', 'betaald')->count();

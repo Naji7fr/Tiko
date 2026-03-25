@@ -16,8 +16,8 @@ class AppointmentController extends Controller
 
     public function create()
     {
-        $patients = User::where('role', 'patient')->get();
-        $dentists = User::where('role', 'tandarts')->get();
+        $patients = User::where('role', 'klant')->get();
+        $dentists = User::where('role', 'reisadviseur')->get();
         return view('afspraken.create', compact('patients', 'dentists'));
     }
 
@@ -38,8 +38,8 @@ class AppointmentController extends Controller
     public function edit($id)
     {
         $appointment = Appointment::findOrFail($id);
-        $patients = User::where('role', 'patient')->get();
-        $dentists = User::where('role', 'tandarts')->get();
+        $patients = User::where('role', 'klant')->get();
+        $dentists = User::where('role', 'reisadviseur')->get();
         return view('afspraken.edit', compact('appointment', 'patients', 'dentists'));
     }
 

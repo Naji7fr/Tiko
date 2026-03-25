@@ -36,7 +36,7 @@ class PatientController extends Controller
     {
         $user = Auth::user();
         $appointments = Appointment::where('patient_id', $user->id)->with('dentist')->orderBy('appointment_date', 'desc')->get();
-        $dentists = User::where('role', 'tandarts')->get();
+        $dentists = User::where('role', 'reisadviseur')->get();
         
         return view('patient.appointments', compact('appointments', 'dentists'));
     }
