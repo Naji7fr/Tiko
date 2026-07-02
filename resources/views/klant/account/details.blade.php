@@ -69,13 +69,22 @@
                         <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('home') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Terug
                         </a>
-                        <a href="{{ route('account.details.edit') }}" class="btn btn-primary ms-auto">
-                            <i class="fas fa-pen me-2"></i>Update details
-                        </a>
+                        <div class="d-flex flex-wrap gap-2 ms-auto">
+                            @if($user->isKlant())
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    <i class="fas fa-user-xmark me-2"></i>Verwijder account
+                                </button>
+                            @endif
+                            <a href="{{ route('account.details.edit') }}" class="btn btn-primary">
+                                <i class="fas fa-pen me-2"></i>Update details
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@include('klant.account.delete-modal')
 @endsection
