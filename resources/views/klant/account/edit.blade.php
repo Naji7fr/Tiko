@@ -9,19 +9,34 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
-                        <div>
-                            <span class="text-uppercase text-muted small fw-semibold">Update details</span>
-                            <h1 class="h3 mb-2">Wijzig je accountgegevens</h1>
-                            <p class="text-muted mb-0">Werk hier je naam, e-mail, telefoon en adres bij.</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="{{ $user->profile_photo_url }}" alt="Profielfoto van {{ $user->name }}" class="rounded-circle border" style="width: 5rem; height: 5rem; object-fit: cover;">
+                            <div>
+                                <span class="text-uppercase text-muted small fw-semibold">Update details</span>
+                                <h1 class="h3 mb-2">Wijzig je accountgegevens</h1>
+                                <p class="text-muted mb-0">Werk hier je naam, e-mail, telefoon, adres en foto bij.</p>
+                            </div>
                         </div>
                         <a href="{{ route('account.details') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Terug naar details
                         </a>
                     </div>
 
-                    <form method="POST" action="{{ route('account.details.update') }}" class="row g-4">
+                    <form method="POST" action="{{ route('account.details.update') }}" class="row g-4" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        <div class="col-12">
+                            <label for="profile_photo" class="form-label">Profielfoto</label>
+                            <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+                                <img src="{{ $user->profile_photo_url }}" alt="Huidige profielfoto" class="rounded-circle border" style="width: 5rem; height: 5rem; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <input type="file" id="profile_photo" name="profile_photo" accept="image/jpeg,image/png,image/webp" class="form-control @error('profile_photo') is-invalid @enderror">
+                                    <div class="form-text">Laat leeg om de bestaande foto te behouden. Zonder foto wordt een placeholder gebruikt.</div>
+                                    @error('profile_photo')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-md-6">
                             <label for="voornaam" class="form-label">First name</label>

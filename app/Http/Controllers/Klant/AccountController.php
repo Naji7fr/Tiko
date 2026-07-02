@@ -6,10 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class AccountController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function details(Request $request): View
     {
         $user = $request->user();
@@ -48,70 +56,93 @@ class AccountController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $user = $request->user();
-        $klant = $user->klant()->with(['gebruiker.contactGegevens', 'gebruiker.adres'])->first();
-        $gebruiker = $klant?->gebruiker;
-        $contactGegevens = $gebruiker?->contactGegevens;
-        $adres = $gebruiker?->adres;
+        try {
+            $user = $request->user();
+            $klant = $user->klant()->with(['gebruiker.contactGegevens', 'gebruiker.adres'])->first();
+            $gebruiker = $klant?->gebruiker;
+            $contactGegevens = $gebruiker?->contactGegevens;
+            $adres = $gebruiker?->adres;
 
-        $emailRules = [
-            'required',
-            'email',
-            'max:255',
-            Rule::unique('users', 'email')->ignore($user->id),
-        ];
+            $emailRules = [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ];
 
-        if ($contactGegevens) {
-            $emailRules[] = Rule::unique('contact_gegevens', 'email')->ignore($contactGegevens->id);
-        }
+            if ($contactGegevens) {
+                $emailRules[] = Rule::unique('contact_gegevens', 'email')->ignore($contactGegevens->id);
+            }
 
-        $validated = $request->validate([
-            'voornaam' => ['required', 'string', 'max:255'],
-            'achternaam' => ['required', 'string', 'max:255'],
-            'email' => $emailRules,
-            'telefoon' => ['nullable', 'string', 'max:25'],
-            'straat' => ['nullable', 'string', 'max:100'],
-            'huisnummer' => ['nullable', 'string', 'max:10'],
-            'postcode' => ['nullable', 'string', 'max:10'],
-            'plaats' => ['nullable', 'string', 'max:50'],
-            'land' => ['nullable', 'string', 'max:50'],
-        ]);
+            $validated = $request->validate([
+                'voornaam' => ['required', 'string', 'max:255'],
+                'achternaam' => ['required', 'string', 'max:255'],
+                'email' => $emailRules,
+                'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+                'telefoon' => ['nullable', 'string', 'max:25'],
+                'straat' => ['nullable', 'string', 'max:100'],
+                'huisnummer' => ['nullable', 'string', 'max:10'],
+                'postcode' => ['nullable', 'string', 'max:10'],
+                'plaats' => ['nullable', 'string', 'max:50'],
+                'land' => ['nullable', 'string', 'max:50'],
+            ]);
 
-        $user->forceFill([
-            'voornaam' => $validated['voornaam'],
-            'achternaam' => $validated['achternaam'],
-            'name' => trim($validated['voornaam'] . ' ' . $validated['achternaam']),
-            'email' => $validated['email'],
-        ])->save();
+            if ($request->hasFile('profile_photo')) {
+                if ($user->profile_photo_path) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
 
-        if ($gebruiker) {
-            $gebruiker->forceFill([
+                $validated['profile_photo_path'] = $request->file('profile_photo')->store('profile-photos', 'public');
+            }
+
+            $user->forceFill([
                 'voornaam' => $validated['voornaam'],
                 'achternaam' => $validated['achternaam'],
-                'volledig_naam' => trim($validated['voornaam'] . ' ' . $validated['achternaam']),
-            ])->save();
-        }
-
-        if ($contactGegevens) {
-            $contactGegevens->forceFill([
+                'name' => trim($validated['voornaam'] . ' ' . $validated['achternaam']),
                 'email' => $validated['email'],
-                'telefoon' => $validated['telefoon'],
+                'profile_photo_path' => $validated['profile_photo_path'] ?? $user->profile_photo_path,
             ])->save();
-        }
 
-        if ($adres) {
-            $adres->forceFill([
-                'straat' => $validated['straat'],
-                'huisnummer' => $validated['huisnummer'],
-                'postcode' => $validated['postcode'],
-                'plaats' => $validated['plaats'],
-                'land' => $validated['land'] ?: 'Nederland',
-            ])->save();
-        }
+            if ($gebruiker) {
+                $gebruiker->forceFill([
+                    'voornaam' => $validated['voornaam'],
+                    'achternaam' => $validated['achternaam'],
+                    'volledig_naam' => trim($validated['voornaam'] . ' ' . $validated['achternaam']),
+                ])->save();
+            }
 
-        return redirect()
-            ->route('account.details')
-            ->with('status', 'Account details zijn bijgewerkt.');
+            if ($contactGegevens) {
+                $contactGegevens->forceFill([
+                    'email' => $validated['email'],
+                    'telefoon' => $validated['telefoon'],
+                ])->save();
+            }
+
+            if ($adres) {
+                $adres->forceFill([
+                    'straat' => $validated['straat'],
+                    'huisnummer' => $validated['huisnummer'],
+                    'postcode' => $validated['postcode'],
+                    'plaats' => $validated['plaats'],
+                    'land' => $validated['land'] ?: 'Nederland',
+                ])->save();
+            }
+
+            return redirect()
+                ->route('account.details')
+                ->with('status', 'Account details zijn bijgewerkt.');
+        } catch (Throwable $exception) {
+            Log::error('Account details bijwerken mislukt.', [
+                'user_id' => $request->user()?->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'general' => 'De accountgegevens konden niet worden bijgewerkt. Probeer het opnieuw.',
+                ]);
+        }
     }
 
     public function settings(Request $request): RedirectResponse
