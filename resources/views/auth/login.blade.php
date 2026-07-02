@@ -1,3 +1,4 @@
+{{-- auth.view — Inlogformulier (admin, medewerker, klant) --}}
 @extends('layouts.app')
 
 @section('title', 'Inloggen')
@@ -64,11 +65,9 @@
                         </div>
                     </form>
 
-                    <hr class="my-4">
-
-                    <div class="text-center">
-                        <p class="mb-0">Nog geen account? <a href="{{ route('register') }}" class="text-primary fw-bold">Registreer hier</a></p>
-                    </div>
+                    <p class="text-center text-muted small mb-0 mt-3">
+                        Nog geen account? <a href="{{ route('register') }}" class="fw-bold">Registreer als klant</a>
+                    </p>
                 </div>
             </div>
         </div>

@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
+/**
+ * Controller voor het klant-portaal.
+ *
+ * Klanten hebben een beperkte omgeving — geen toegang tot medewerkerbeheer.
+ * Later uitbreidbaar met afspraken, profiel, etc.
+ */
 class KlantController extends Controller
 {
     /**
-     * Overzicht van alle klanten (users met role klant).
+     * Toon het klant-dashboard.
      */
-    public function index()
+    public function dashboard(): View
     {
-        $klanten = User::where('role', 'klant')->orderBy('name')->get();
-        return view('klanten.index', compact('klanten'));
+        $user = Auth::user();
+        $klant = $user->klant()?->with('gebruiker.contactGegevens')->first();
+
+        return view('klant.dashboard', compact('user', 'klant'));
     }
 }

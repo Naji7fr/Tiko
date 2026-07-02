@@ -3,56 +3,86 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
+/**
+ * Controller voor inloggen en uitloggen (authenticatie).
+ *
+ * Redirect na login:
+ *   admin   → eigenaar-dashboard
+ *   medewerker → medewerkerbeheer
+ *   klant   → klant-dashboard
+ */
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    /**
+     * Toon het inlogformulier.
+     */
+    public function showLoginForm(): View
     {
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    /**
+     * Verwerk een inlogpoging.
+     *
+     * @throws ValidationException
+     */
+    public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            
-            $user = Auth::user();
-            
-            // Check if user is active
-            if (strtolower($user->status ?? '') !== 'actief') {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Uw account is niet actief. Neem contact op met de beheerder.',
-                ]);
-            }
-
-            // Redirect based on role
-            if (in_array($user->role, ['admin', 'manager'])) {
-                return redirect()->intended(route('home'));
-            } else {
-                return redirect()->intended(route('patient.dashboard'));
-            }
+        if (! Auth::attempt($credentials, $request->filled('remember'))) {
+            throw ValidationException::withMessages([
+                'email' => 'De opgegeven inloggegevens komen niet overeen met onze gegevens.',
+            ]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => 'De opgegeven inloggegevens komen niet overeen met onze gegevens.',
-        ]);
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Alleen actieve accounts mogen inloggen
+        if (strtolower($user->status ?? '') !== 'actief') {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'Uw account is niet actief. Neem contact op met de beheerder.',
+            ]);
+        }
+
+        // Eigenaar → dashboard, medewerker → medewerkerbeheer, klant → klant-portaal
+        if ($user->isEigenaar()) {
+            return redirect()->intended(route('eigenaar.dashboard'));
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->intended(route('medewerkers.index'));
+        }
+
+        if ($user->isKlant()) {
+            return redirect()->intended(route('klant.dashboard'));
+        }
+
+        return redirect()->intended(route('home'));
     }
 
-    public function logout(Request $request)
+    /**
+     * Log de gebruiker uit en invalideer de sessie.
+     */
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('home');
     }
 }
-

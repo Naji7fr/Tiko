@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
+/**
+ * Controller voor de publieke startpagina.
+ */
 class HomeController extends Controller
 {
-    public function index()
+    /**
+     * Toon de welkomstpagina.
+     */
+    public function index(): View
     {
         return view('home');
     }
