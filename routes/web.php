@@ -61,5 +61,6 @@ Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
     Route::post('/product-toevoegen', [ProductController::class, 'store'])->name('producten.store');
     Route::get('/product-wijzigen/{id}', [ProductController::class, 'edit'])->name('producten.edit');
     Route::put('/product-wijzigen/{id}', [ProductController::class, 'update'])->name('producten.update');
+    Route::delete('/producten/{id}', [ProductController::class, 'destroy'])->name('producten.destroy');
     Route::resource('medewerkers', MedewerkerController::class);
 });

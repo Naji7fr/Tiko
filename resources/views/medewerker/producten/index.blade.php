@@ -51,9 +51,18 @@
                                     <td>{{ $product->voorraad }}</td>
                                     <td>{{ $product->leverancier_naam ?? 'Onbekend' }}</td>
                                     <td>
-                                        <a href="{{ route('producten.edit', $product->id) }}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-edit me-1"></i>Wijzigen
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('producten.edit', $product->id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit me-1"></i>Wijzigen
+                                            </a>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger"
+                                                    data-delete-trigger
+                                                    data-delete-url="{{ route('producten.destroy', $product->id) }}"
+                                                    data-delete-name="{{ $product->product_naam }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

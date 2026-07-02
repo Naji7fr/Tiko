@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    /**
-     * GET /product-overzicht — Productenlijst voor medewerkers.
-     */
+    /** GET /product-overzicht — Productenlijst voor medewerkers. */
     public function index(): View|RedirectResponse
     {
         try {
@@ -49,9 +47,7 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * GET /product-toevoegen — Formulier voor nieuw product.
-     */
+    /** GET /product-toevoegen — Formulier voor nieuw product. */
     public function create(): View
     {
         $categorieen = DB::table('categorieen')->orderBy('naam')->get();
@@ -64,9 +60,7 @@ class ProductController extends Controller
         return view('medewerker.producten.create', compact('categorieen', 'leveranciers'));
     }
 
-    /**
-     * POST /product-toevoegen — Sla nieuw product op.
-     */
+    /** POST /product-toevoegen — Sla nieuw product op. */
     public function store(StoreProductRequest $request): RedirectResponse
     {
         try {
@@ -181,6 +175,32 @@ class ProductController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', 'Controleer de productgegevens');
+        }
+    }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        try {
+            $inUse = DB::table('behandeling_producten')->where('product_id', $id)->exists()
+                || DB::table('bestelling_producten')->where('product_id', $id)->exists();
+
+            if ($inUse) {
+                return redirect()->route('producten.index')
+                    ->with('error', 'Dit product kan niet worden verwijderd omdat het nog in gebruik is');
+            }
+
+            DB::transaction(function () use ($id) {
+                DB::table('voorraad')->where('product_id', $id)->delete();
+                DB::table('producten')->where('id', $id)->delete();
+            });
+
+            return redirect()->route('producten.index')
+                ->with('success', 'Product succesvol verwijderd!');
+        } catch (\Throwable $exception) {
+            TechnischeLogModel::registreer('error', 'producten', 'destroy', $exception->getMessage());
+
+            return redirect()->route('producten.index')
+                ->with('error', 'Product kon niet worden verwijderd.');
         }
     }
 }
