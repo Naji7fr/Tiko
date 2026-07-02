@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 use Illuminate\Validation\Rule;
 
@@ -148,23 +149,37 @@ class AccountController extends Controller
 
         try {
             $user = $request->user();
-            $klant = Klant::with(['gebruiker.contactGegevens', 'gebruiker.adres'])
-                ->where('user_id', $user->id)
-                ->first();
+            $klantQuery = Klant::query()->where('user_id', $user->id);
+
+            if (Schema::hasTable('adressen')) {
+                $klantQuery->with(['gebruiker.contactGegevens', 'gebruiker.adres']);
+            } else {
+                $klantQuery->with('gebruiker.contactGegevens');
+            }
+
+            $klant = $klantQuery->first();
+            $gebruikerId = $klant?->gebruiker_id;
+            $contactGegevensId = $klant?->gebruiker?->contact_gegevens_id;
+            $adresId = Schema::hasTable('adressen') ? $klant?->gebruiker?->adres_id : null;
 
             DB::transaction(function () use ($user, $klant): void {
-                $gebruiker = $klant?->gebruiker;
-                $adres = $gebruiker?->adres;
+                $gebruikerId = $klant?->gebruiker_id;
+                $contactGegevensId = $klant?->gebruiker?->contact_gegevens_id;
+                $adresId = Schema::hasTable('adressen') ? $klant?->gebruiker?->adres_id : null;
 
-                if ($adres) {
-                    $adres->delete();
+                if ($adresId) {
+                    DB::table('adressen')->where('id', $adresId)->delete();
                 }
 
-                if ($gebruiker) {
-                    $gebruiker->delete();
+                if ($gebruikerId) {
+                    DB::table('gebruikers')->where('id', $gebruikerId)->delete();
                 }
 
-                $user->delete();
+                if ($contactGegevensId) {
+                    DB::table('contact_gegevens')->where('id', $contactGegevensId)->delete();
+                }
+
+                DB::table('users')->where('id', $user->id)->delete();
             });
 
             Auth::logout();
