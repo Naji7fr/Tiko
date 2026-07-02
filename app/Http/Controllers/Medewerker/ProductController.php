@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Medewerker;
 
 use App\Http\Controllers\Controller;
 use App\Models\Medewerker\TechnischeLogModel;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
@@ -66,6 +67,120 @@ class ProductController extends Controller
 
             return redirect()->route('producten.index')
                 ->with('error', 'Product kon niet worden verwijderd.');
+        }
+    }
+
+    public function create(): View|RedirectResponse
+    {
+        try {
+            $categorieen = DB::table('categorieen')->orderBy('naam')->get();
+            $leveranciers = DB::table('leveranciers as l')
+                ->leftJoin('leverancier_gegevens as vg', 'l.leverancier_gegevens_id', '=', 'vg.id')
+                ->select('l.id', 'vg.bedrijfsnaam')
+                ->orderBy('vg.bedrijfsnaam')
+                ->get();
+
+            return view('medewerker.producten.create', compact('categorieen', 'leveranciers'));
+        } catch (\Throwable $exception) {
+            TechnischeLogModel::registreer('error', 'producten', 'create', $exception->getMessage());
+
+            return redirect()->route('producten.index')
+                ->with('error', 'Productformulier kon niet geladen worden.');
+        }
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'naam' => 'required|string|max:100',
+            'categorie_id' => 'required|exists:categorieen,id',
+            'leverancier_id' => 'required|exists:leveranciers,id',
+            'prijs' => 'required|numeric',
+            'beschrijving' => 'nullable|string|max:225'
+        ]);
+
+        try {
+            DB::transaction(function () use ($data) {
+                $id = DB::table('producten')->insertGetId([
+                    'categorie_id' => $data['categorie_id'],
+                    'leverancier_id' => $data['leverancier_id'],
+                    'naam' => $data['naam'],
+                    'beschrijving' => $data['beschrijving'] ?? null,
+                    'prijs' => $data['prijs'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                DB::table('voorraad')->insert([
+                    'product_id' => $id,
+                    'categorie_id' => $data['categorie_id'],
+                    'aantal' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+
+            return redirect()->route('producten.index')->with('success', 'Product succesvol toegevoegd.');
+        } catch (\Throwable $exception) {
+            TechnischeLogModel::registreer('error', 'producten', 'store', $exception->getMessage());
+
+            return redirect()->route('producten.index')->with('error', 'Product kon niet worden toegevoegd.');
+        }
+    }
+
+    public function edit(int $id): View|RedirectResponse
+    {
+        try {
+            $product = DB::table('producten')->where('id', $id)->first();
+
+            if (!$product) {
+                return redirect()->route('producten.index')->with('error', 'Product niet gevonden.');
+            }
+
+            $categorieen = DB::table('categorieen')->orderBy('naam')->get();
+            $leveranciers = DB::table('leveranciers as l')
+                ->leftJoin('leverancier_gegevens as vg', 'l.leverancier_gegevens_id', '=', 'vg.id')
+                ->select('l.id', 'vg.bedrijfsnaam')
+                ->orderBy('vg.bedrijfsnaam')
+                ->get();
+
+            return view('medewerker.producten.edit', compact('product', 'categorieen', 'leveranciers'));
+        } catch (\Throwable $exception) {
+            TechnischeLogModel::registreer('error', 'producten', 'edit', $exception->getMessage());
+
+            return redirect()->route('producten.index')->with('error', 'Product kon niet worden geladen.');
+        }
+    }
+
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        $data = $request->validate([
+            'naam' => 'required|string|max:100',
+            'categorie_id' => 'required|exists:categorieen,id',
+            'leverancier_id' => 'required|exists:leveranciers,id',
+            'prijs' => 'required|numeric',
+            'beschrijving' => 'nullable|string|max:225'
+        ]);
+
+        try {
+            DB::transaction(function () use ($id, $data) {
+                DB::table('producten')->where('id', $id)->update([
+                    'categorie_id' => $data['categorie_id'],
+                    'leverancier_id' => $data['leverancier_id'],
+                    'naam' => $data['naam'],
+                    'beschrijving' => $data['beschrijving'] ?? null,
+                    'prijs' => $data['prijs'],
+                    'updated_at' => now(),
+                ]);
+
+                DB::table('voorraad')->where('product_id', $id)->update(['categorie_id' => $data['categorie_id'], 'updated_at' => now()]);
+            });
+
+            return redirect()->route('producten.index')->with('success', 'Product succesvol bijgewerkt.');
+        } catch (\Throwable $exception) {
+            TechnischeLogModel::registreer('error', 'producten', 'update', $exception->getMessage());
+
+            return redirect()->route('producten.index')->with('error', 'Product kon niet worden bijgewerkt.');
         }
     }
 }

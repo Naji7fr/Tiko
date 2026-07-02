@@ -67,7 +67,7 @@
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'klanten') }}"><i class="fas fa-user-friends me-2"></i>Klanten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'afspraken') }}"><i class="fas fa-calendar me-2"></i>Afspraken</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'behandelingen') }}"><i class="fas fa-cut me-2"></i>Behandelingen</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'producten') }}"><i class="fas fa-box me-2"></i>Producten</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('producten.index') }}"><i class="fas fa-box me-2"></i>Producten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'bestellingen') }}"><i class="fas fa-shopping-cart me-2"></i>Bestellingen</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.rapportages') }}"><i class="fas fa-chart-bar me-2"></i>Rapportages</a></li>

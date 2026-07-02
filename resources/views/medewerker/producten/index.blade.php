@@ -15,6 +15,9 @@
 
     <div class="card">
         <div class="card-body">
+            <div class="mb-3">
+                <a href="{{ route('producten.create') }}" class="btn btn-success"><i class="fas fa-plus me-1"></i> Product toevoegen</a>
+            </div>
             @if($producten->isEmpty())
                 <div class="alert alert-info" role="alert">
                     <i class="fas fa-info-circle me-2"></i>Er zijn geen producten geregistreerd.
@@ -41,6 +44,7 @@
                                     <td>{{ $product->voorraad }}</td>
                                     <td>{{ $product->leverancier_naam ?? 'Onbekend' }}</td>
                                     <td>
+                                        <a href="{{ route('producten.edit', $product->id) }}" class="btn btn-sm btn-primary me-1"><i class="fas fa-edit me-1"></i>Bewerken</a>
                                         <button type="button"
                                                 class="btn btn-sm btn-danger"
                                                 data-delete-trigger
