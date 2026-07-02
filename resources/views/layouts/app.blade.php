@@ -88,13 +88,29 @@
                         @endif
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button
+                                type="button"
+                                class="nav-link btn btn-sm dropdown-toggle {{ request()->routeIs('home') ? 'btn-outline-light' : 'btn-outline-dark' }} rounded-pill px-3"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
                                 <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                                <li class="px-3 py-2">
+                                    <div class="text-muted small text-uppercase fw-semibold mb-1">Ingelogd als</div>
+                                    <div class="fw-semibold">{{ Auth::user()->name }}</div>
+                                    <div class="text-muted small">{{ Auth::user()->email }}</div>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('logout.get') }}">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Uitloggen
+                                    <a class="dropdown-item rounded-2" href="{{ route('account.details') }}">
+                                        <i class="fas fa-circle-info me-2"></i>Account details
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded-2 text-danger" href="{{ route('logout.get') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Log out
                                     </a>
                                 </li>
                             </ul>
