@@ -7,36 +7,29 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Hoofdseeder: Tiko-stamgegevens + standaard admin-account.
+ */
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Admin (for beheer / backoffice)
+        $this->call(TikoSeeder::class);
+
         User::updateOrCreate(
-            ['email' => 'admin@bng.nl'],
+            ['email' => 'admin@tiko.nl'],
             [
-                'name'       => 'admin',
-                'voornaam'   => 'Beheerder',
-                'achternaam' => 'BNG',
-                'email'      => 'admin@bng.nl',
-                'password'   => Hash::make('password'),
-                'role'       => 'admin',
-                'status'     => 'Actief',
+                'name' => 'admin',
+                'voornaam' => 'Beheerder',
+                'achternaam' => 'Tiko',
+                'email' => 'admin@tiko.nl',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'status' => 'Actief',
                 'email_verified_at' => now(),
             ]
         );
-
-        User::factory()->create([
-            'name'       => 'testuser',
-            'voornaam'   => 'Test',
-            'achternaam' => 'Gebruiker',
-            'email'      => 'test@example.com',
-            'status'     => 'Actief',
-        ]);
     }
 }

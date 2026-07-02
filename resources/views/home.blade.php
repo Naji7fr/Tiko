@@ -1,324 +1,280 @@
 @extends('layouts.app')
 
-@section('title', 'Welkom bij BNG')
+@section('title', 'Tiko Barbershop — Sharp Cuts & Clean Fades')
 
 @section('content')
-<!-- Hero Section - Booking.com style -->
-<section class="hero-section hero-booking">
-    <div class="container">
-        <h1 class="hero-booking-title">Vind uw volgende verblijf</h1>
-        <p class="hero-booking-sub">Zoek aanbiedingen voor hotels, woningen en veel meer...</p>
+<div class="home-page">
 
-        <!-- Search widget - Booking.com style -->
-        <div class="search-widget-booking card shadow border-0 rounded-3 overflow-hidden" id="search">
-            <div class="card-body p-0">
-                <ul class="nav nav-tabs nav-fill search-tabs" id="searchTypeTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active" id="tab-stays" data-bs-toggle="tab" data-bs-target="#panel-stays" type="button" role="tab">
-                            <i class="fas fa-bed me-2"></i>Verblijf
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-flights" data-bs-toggle="tab" data-bs-target="#panel-flights" type="button" role="tab">
-                            <i class="fas fa-plane me-2"></i>Vluchten
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-flight-hotel" data-bs-toggle="tab" data-bs-target="#panel-flight-hotel" type="button" role="tab">
-                            <i class="fas fa-plane-arrival me-2"></i><i class="fas fa-bed ms-1 me-2"></i>Vlucht + Hotel
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-car" data-bs-toggle="tab" data-bs-target="#panel-car" type="button" role="tab">
-                            <i class="fas fa-car me-2"></i>Auto huren
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="tab-content search-tab-content bg-white">
-                    <!-- Stays -->
-                    <div class="tab-pane fade show active p-4" id="panel-stays" role="tabpanel">
-                        <form action="{{ route('search') }}" method="GET" class="search-form-booking">
-                            <input type="hidden" name="type" value="stays">
-                            <div class="search-row">
-                                <div class="search-field">
-                                    <label class="search-field-label"><i class="fas fa-bed me-2"></i>Waar gaat u naartoe?</label>
-                                    <input type="text" name="q" class="form-control border-0" placeholder="Bestemming, stad of accommodatie" value="{{ request('q') }}" required>
-                                </div>
-                                <div class="search-field search-field-dates">
-                                    <label class="search-field-label"><i class="fas fa-calendar-alt me-2"></i>Check-in — Check-out</label>
-                                    <div class="d-flex gap-2">
-                                        <input type="date" name="check_in" class="form-control border-0" value="{{ request('check_in') }}">
-                                        <span class="align-self-center text-muted">—</span>
-                                        <input type="date" name="check_out" class="form-control border-0" value="{{ request('check_out') }}">
-                                    </div>
-                                </div>
-                                <div class="search-field search-field-guests">
-                                    <label class="search-field-label"><i class="fas fa-user me-2"></i>Gasten en kamers</label>
-                                    <div class="dropdown">
-                                        <button class="form-control border-0 text-start dropdown-toggle bg-white" type="button" id="guestsDropdown" data-bs-toggle="dropdown">
-                                            <span id="guestsSummary">2 volwassenen · 0 kinderen · 1 kamer</span>
-                                        </button>
-                                        <input type="hidden" name="adults" id="inputAdults" value="{{ request('adults', 2) }}">
-                                        <input type="hidden" name="children" id="inputChildren" value="{{ request('children', 0) }}">
-                                        <input type="hidden" name="rooms" id="inputRooms" value="{{ request('rooms', 1) }}">
-                                        <ul class="dropdown-menu dropdown-menu-end p-3 shadow" style="min-width: 280px;">
-                                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                                <span>Volwassenen</span>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button type="button" class="btn btn-outline-secondary" id="adultsMinus">−</button>
-                                                    <span class="btn btn-outline-secondary disabled" id="adultsCount">2</span>
-                                                    <button type="button" class="btn btn-outline-secondary" id="adultsPlus">+</button>
-                                                </div>
-                                            </li>
-                                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                                <span>Kinderen</span>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button type="button" class="btn btn-outline-secondary" id="childrenMinus">−</button>
-                                                    <span class="btn btn-outline-secondary disabled" id="childrenCount">0</span>
-                                                    <button type="button" class="btn btn-outline-secondary" id="childrenPlus">+</button>
-                                                </div>
-                                            </li>
-                                            <li class="d-flex justify-content-between align-items-center">
-                                                <span>Kamers</span>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button type="button" class="btn btn-outline-secondary" id="roomsMinus">−</button>
-                                                    <span class="btn btn-outline-secondary disabled" id="roomsCount">1</span>
-                                                    <button type="button" class="btn btn-outline-secondary" id="roomsPlus">+</button>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="search-field search-field-btn">
-                                    <button type="submit" class="btn btn-primary btn-search-booking">
-                                        <i class="fas fa-search me-2"></i>Zoeken
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="form-check mt-3">
-                                <input type="checkbox" class="form-check-input" name="add_flights" id="addFlights" value="1" {{ request('add_flights') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="addFlights">Voeg vluchten toe aan mijn zoekopdracht</label>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Flights -->
-                    <div class="tab-pane fade p-4" id="panel-flights" role="tabpanel">
-                        <form action="{{ route('search') }}" method="GET" class="search-form-booking">
-                            <input type="hidden" name="type" value="flights">
-                            <div class="search-row">
-                                <div class="search-field">
-                                    <label class="search-field-label"><i class="fas fa-plane-departure me-2"></i>Van</label>
-                                    <input type="text" name="from" class="form-control border-0" placeholder="Vertrekluchthaven of stad" value="{{ request('from') }}">
-                                </div>
-                                <div class="search-field">
-                                    <label class="search-field-label"><i class="fas fa-plane-arrival me-2"></i>Naar</label>
-                                    <input type="text" name="to" class="form-control border-0" placeholder="Aankomstluchthaven of stad" value="{{ request('to') }}">
-                                </div>
-                                <div class="search-field search-field-dates">
-                                    <label class="search-field-label"><i class="fas fa-calendar-alt me-2"></i>Datum</label>
-                                    <input type="date" name="flight_date" class="form-control border-0" value="{{ request('flight_date') }}">
-                                </div>
-                                <div class="search-field search-field-btn">
-                                    <button type="submit" class="btn btn-primary btn-search-booking">
-                                        <i class="fas fa-search me-2"></i>Zoeken
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Flight + Hotel -->
-                    <div class="tab-pane fade p-4" id="panel-flight-hotel" role="tabpanel">
-                        <form action="{{ route('search') }}" method="GET" class="search-form-booking">
-                            <input type="hidden" name="type" value="flight_hotel">
-                            <div class="search-row">
-                                <div class="search-field">
-                                    <label class="search-field-label"><i class="fas fa-bed me-2"></i>Waar gaat u naartoe?</label>
-                                    <input type="text" name="q" class="form-control border-0" placeholder="Bestemming" value="{{ request('q') }}">
-                                </div>
-                                <div class="search-field search-field-dates">
-                                    <label class="search-field-label"><i class="fas fa-calendar-alt me-2"></i>Check-in — Check-out</label>
-                                    <div class="d-flex gap-2">
-                                        <input type="date" name="check_in" class="form-control border-0" value="{{ request('check_in') }}">
-                                        <span class="align-self-center text-muted">—</span>
-                                        <input type="date" name="check_out" class="form-control border-0" value="{{ request('check_out') }}">
-                                    </div>
-                                </div>
-                                <div class="search-field search-field-btn">
-                                    <button type="submit" class="btn btn-primary btn-search-booking">
-                                        <i class="fas fa-search me-2"></i>Zoeken
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Car rental -->
-                    <div class="tab-pane fade p-4" id="panel-car" role="tabpanel">
-                        <form action="{{ route('search') }}" method="GET" class="search-form-booking">
-                            <input type="hidden" name="type" value="car">
-                            <div class="search-row">
-                                <div class="search-field">
-                                    <label class="search-field-label"><i class="fas fa-map-marker-alt me-2"></i>Waar?</label>
-                                    <input type="text" name="q" class="form-control border-0" placeholder="Ophaallocatie" value="{{ request('q') }}">
-                                </div>
-                                <div class="search-field search-field-dates">
-                                    <label class="search-field-label"><i class="fas fa-calendar-alt me-2"></i>Ophalen — Inleveren</label>
-                                    <div class="d-flex gap-2">
-                                        <input type="date" name="pickup_date" class="form-control border-0" value="{{ request('pickup_date') }}">
-                                        <span class="align-self-center text-muted">—</span>
-                                        <input type="date" name="return_date" class="form-control border-0" value="{{ request('return_date') }}">
-                                    </div>
-                                </div>
-                                <div class="search-field search-field-btn">
-                                    <button type="submit" class="btn btn-primary btn-search-booking">
-                                        <i class="fas fa-search me-2"></i>Zoeken
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+    {{-- Hero --}}
+    <section class="barber-hero">
+        <div class="barber-hero__overlay"></div>
+        <div class="container barber-hero__content">
+            <span class="barber-hero__badge"><i class="fas fa-scissors me-2"></i>Amsterdam · Sinds 2018</span>
+            <h1 class="barber-hero__title">TIKO<br><span>Barbershop</span></h1>
+            <p class="barber-hero__tagline">Sharp cuts. Clean fades. Real craft.</p>
+            <div class="barber-hero__actions">
+                <a href="#diensten" class="btn btn-gold btn-lg">
+                    <i class="fas fa-cut me-2"></i>Onze diensten
+                </a>
+                <a href="#contact" class="btn btn-outline-gold btn-lg">
+                    <i class="fas fa-phone me-2"></i>Bel nu
+                </a>
+            </div>
+            <div class="barber-hero__stats">
+                <div class="barber-stat">
+                    <strong>2.500+</strong>
+                    <span>Tevreden klanten</span>
+                </div>
+                <div class="barber-stat">
+                    <strong>4.9</strong>
+                    <span>Gemiddelde score</span>
+                </div>
+                <div class="barber-stat">
+                    <strong>6</strong>
+                    <span>Top kappers</span>
                 </div>
             </div>
         </div>
-
-        <a href="#about" class="btn-hero mt-4">Meer Over Ons</a>
-    </div>
-</section>
-
-<!-- About Section -->
-<section id="about" class="about-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop" alt="Accommodatie" class="about-image">
-            </div>
-            <div class="col-lg-6">
-                <h2>Over BNG</h2>
-                <p>BNG is uw boekingsplatform voor accommodaties wereldwijd. Net als Booking.com helpen we reizigers de juiste plek te vinden, van hotels en appartementen tot vakantiewoningen.</p>
-                <p>Met duizenden accommodaties, eerlijke reviews en een eenvoudig boekingsproces maakt BNG reizen eenvoudiger en betaalbaarder.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Section -->
-<section class="services-section">
-    <div class="container">
-        <h2>Waarom BNG?</h2>
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="card service-card">
-                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop" alt="Hotels" class="service-image">
-                    <div class="p-3">
-                        <h5>Hotels & Resorts</h5>
-                        <p>Van budget tot luxe. Vind het juiste hotel voor elke reis en elk budget.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="card service-card">
-                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="Appartementen" class="service-image">
-                    <div class="p-3">
-                        <h5>Appartementen</h5>
-                        <p>Meer ruimte en privacy. Ideaal voor gezinnen en langere verblijven.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="card service-card">
-                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop" alt="Vakantiewoningen" class="service-image">
-                    <div class="p-3">
-                        <h5>Vakantiewoningen</h5>
-                        <p>Unieke plekken met karakter. Van villa's tot huisjes aan het strand.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action -->
-<section class="cta-section">
-    <div class="container">
-        <h2>Klaar om te Boeken?</h2>
-        <p>Registreer of log in om accommodaties te vergelijken en direct te reserveren.</p>
-        <a href="{{ route('register') }}" class="btn btn-light btn-lg rounded-pill px-4 py-3">
-            <i class="fas fa-user-plus me-2"></i>Registreren
+        <a href="#diensten" class="barber-hero__scroll" aria-label="Scroll naar diensten">
+            <i class="fas fa-chevron-down"></i>
         </a>
-    </div>
-</section>
+    </section>
 
-<!-- Management Access Section -->
-<section class="management-section">
-    <div class="container">
-        <h2>Manager Operations</h2>
-        <p>Voor beheerders: toegang tot overzichten en beheer.</p>
-        <div class="management-grid">
-            <div class="management-item">
-                <i class="fas fa-users"></i><br>
-                <a href="{{ route('medewerkers.index') }}">Overzicht medewerker</a>
+    {{-- Diensten --}}
+    <section id="diensten" class="barber-section barber-services">
+        <div class="container">
+            <div class="barber-section__header text-center">
+                <span class="barber-section__label">Wat wij doen</span>
+                <h2>Onze diensten</h2>
+                <p>Van klassieke fades tot baardverzorging en kleur — alles onder één dak.</p>
             </div>
-            @if(Route::has('klanten.index'))
-            <div class="management-item">
-                <i class="fas fa-user-friends"></i><br>
-                <a href="{{ route('klanten.index') }}">Overzicht klant</a>
-            </div>
-            @endif
-            <div class="management-item">
-                <i class="fas fa-user-shield"></i><br>
-                <a href="{{ route('accounts.index') }}">Overzicht accounts</a>
-            </div>
-            <div class="management-item">
-                <i class="fas fa-envelope"></i><br>
-                <a href="{{ route('berichten.index') }}">Berichten</a>
-            </div>
-            <div class="management-item">
-                <i class="fas fa-file-invoice-dollar"></i><br>
-                <a href="{{ route('facturen.index') }}">Facturen</a>
-            </div>
-            <div class="management-item">
-                <i class="fas fa-chart-bar"></i><br>
-                <a href="{{ route('statistieken.index') }}">Statistieken</a>
-            </div>
-            <div class="management-item">
-                <i class="fas fa-calendar-check"></i><br>
-                <a href="{{ route('afspraken.index') }}">Afspraken</a>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="barber-service-card">
+                        <div class="barber-service-card__image">
+                            <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=400&fit=crop" alt="Fade knippen">
+                            <span class="barber-service-card__price">vanaf €25</span>
+                        </div>
+                        <div class="barber-service-card__body">
+                            <div class="barber-service-card__icon"><i class="fas fa-layer-group"></i></div>
+                            <h3>Fade</h3>
+                            <p>Skin fades, low fades en tapers — strak afgewerkt tot in de details.</p>
+                            <ul class="barber-service-card__list">
+                                <li><i class="fas fa-check"></i> Low / Mid / High fade</li>
+                                <li><i class="fas fa-check"></i> Lineup & shape-up</li>
+                                <li><i class="fas fa-check"></i> ± 30 minuten</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="barber-service-card barber-service-card--featured">
+                        <div class="barber-service-card__badge">Populair</div>
+                        <div class="barber-service-card__image">
+                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=400&fit=crop" alt="Baard trimmen">
+                            <span class="barber-service-card__price">vanaf €15</span>
+                        </div>
+                        <div class="barber-service-card__body">
+                            <div class="barber-service-card__icon"><i class="fas fa-user-tie"></i></div>
+                            <h3>Baard</h3>
+                            <p>Trimmen, shapen en verzorgen — voor een verzorgde look die past bij je gezicht.</p>
+                            <ul class="barber-service-card__list">
+                                <li><i class="fas fa-check"></i> Baard trim & contour</li>
+                                <li><i class="fas fa-check"></i> Hot towel behandeling</li>
+                                <li><i class="fas fa-check"></i> ± 20 minuten</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="barber-service-card">
+                        <div class="barber-service-card__image">
+                            <img src="https://images.unsplash.com/photo-1562320880-bbe3b042977b?w=600&h=400&fit=crop" alt="Haarkleuring">
+                            <span class="barber-service-card__price">op aanvraag</span>
+                        </div>
+                        <div class="barber-service-card__body">
+                            <div class="barber-service-card__icon"><i class="fas fa-palette"></i></div>
+                            <h3>Kleuren</h3>
+                            <p>Subtiele highlights, grijs blending of een volledige kleurtransformatie.</p>
+                            <ul class="barber-service-card__list">
+                                <li><i class="fas fa-check"></i> Grey blending</li>
+                                <li><i class="fas fa-check"></i> Highlights & lowlights</li>
+                                <li><i class="fas fa-check"></i> Premium kleurproducten</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var adults = parseInt(document.getElementById('inputAdults').value) || 2;
-    var children = parseInt(document.getElementById('inputChildren').value) || 0;
-    var rooms = parseInt(document.getElementById('inputRooms').value) || 1;
-    adults = Math.min(30, Math.max(1, adults));
-    children = Math.min(10, Math.max(0, children));
-    rooms = Math.min(10, Math.max(1, rooms));
+    {{-- Over ons --}}
+    <section id="over-ons" class="barber-section barber-about">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <div class="barber-about__images">
+                        <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=700&h=500&fit=crop" alt="Barber aan het werk" class="barber-about__img-main">
+                        <img src="https://images.unsplash.com/photo-1585747860715-2b67befef277?w=400&h=300&fit=crop" alt="Barbershop interieur" class="barber-about__img-accent">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <span class="barber-section__label">Over ons</span>
+                    <h2>Meer dan alleen een knipbeurt</h2>
+                    <p class="barber-about__lead">Bij Tiko draait alles om vakmanschap, sfeer en aandacht. Geen haast, geen compromissen — alleen topresultaten.</p>
+                    <p>Onze shop in Amsterdam is een plek waar je even tot rust komt. Goede muziek, koffie erbij, en kappers die weten wat ze doen. Of je nu wekelijks langskomt of voor het eerst binnenstapt — je voelt je meteen thuis.</p>
+                    <div class="barber-about__features">
+                        <div class="barber-feature">
+                            <i class="fas fa-award"></i>
+                            <div>
+                                <strong>Ervaren team</strong>
+                                <span>Gespecialiseerde kappers per discipline</span>
+                            </div>
+                        </div>
+                        <div class="barber-feature">
+                            <i class="fas fa-spray-can-sparkles"></i>
+                            <div>
+                                <strong>Premium producten</strong>
+                                <span>Alleen A-merken op de werkvloer</span>
+                            </div>
+                        </div>
+                        <div class="barber-feature">
+                            <i class="fas fa-walkie-talkie"></i>
+                            <div>
+                                <strong>Walk-ins welkom</strong>
+                                <span>Geen afspraak? Kom gerust langs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    function updateGuests() {
-        document.getElementById('inputAdults').value = adults;
-        document.getElementById('inputChildren').value = children;
-        document.getElementById('inputRooms').value = rooms;
-        document.getElementById('adultsCount').textContent = adults;
-        document.getElementById('childrenCount').textContent = children;
-        document.getElementById('roomsCount').textContent = rooms;
-        document.getElementById('guestsSummary').textContent = adults + ' volwassenen · ' + children + ' kinderen · ' + rooms + ' kamer' + (rooms > 1 ? 's' : '');
-    }
-    updateGuests();
+    {{-- Galerij --}}
+    <section class="barber-section barber-gallery">
+        <div class="container">
+            <div class="barber-section__header text-center">
+                <span class="barber-section__label">Sfeerimpressie</span>
+                <h2>Onze shop</h2>
+            </div>
+            <div class="barber-gallery__grid">
+                <div class="barber-gallery__item barber-gallery__item--wide">
+                    <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&h=500&fit=crop" alt="Barbershop">
+                    <div class="barber-gallery__caption">De shop</div>
+                </div>
+                <div class="barber-gallery__item">
+                    <img src="https://images.unsplash.com/photo-1593702275687-f8b4024441f5?w=500&h=400&fit=crop" alt="Fade knippen">
+                    <div class="barber-gallery__caption">Precision fade</div>
+                </div>
+                <div class="barber-gallery__item">
+                    <img src="https://images.unsplash.com/photo-1633681199700-64a092b927a8?w=500&h=400&fit=crop" alt="Baardverzorging">
+                    <div class="barber-gallery__caption">Baardverzorging</div>
+                </div>
+                <div class="barber-gallery__item">
+                    <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=500&h=400&fit=crop" alt="Kapper tools">
+                    <div class="barber-gallery__caption">Vakmanschap</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    document.getElementById('adultsPlus').addEventListener('click', function() { adults = Math.min(30, adults + 1); updateGuests(); });
-    document.getElementById('adultsMinus').addEventListener('click', function() { adults = Math.max(1, adults - 1); updateGuests(); });
-    document.getElementById('childrenPlus').addEventListener('click', function() { children = Math.min(10, children + 1); updateGuests(); });
-    document.getElementById('childrenMinus').addEventListener('click', function() { children = Math.max(0, children - 1); updateGuests(); });
-    document.getElementById('roomsPlus').addEventListener('click', function() { rooms = Math.min(10, rooms + 1); updateGuests(); });
-    document.getElementById('roomsMinus').addEventListener('click', function() { rooms = Math.max(1, rooms - 1); updateGuests(); });
-});
-</script>
-@endpush
+    {{-- Contact & openingstijden --}}
+    <section id="contact" class="barber-section barber-contact">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="barber-contact-card">
+                        <span class="barber-section__label">Bezoek ons</span>
+                        <h2>Contact & locatie</h2>
+                        <ul class="barber-contact-list">
+                            <li>
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Adres</strong>
+                                    <span>Hoofdstraat 123, 1012 AB Amsterdam</span>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Telefoon</strong>
+                                    <span>020 - 123 4567</span>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>E-mail</strong>
+                                    <span>info@tiko.nl</span>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fab fa-instagram"></i>
+                                <div>
+                                    <strong>Instagram</strong>
+                                    <span>@tiko.barbershop</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="barber-hours-card">
+                        <h3><i class="fas fa-clock me-2"></i>Openingstijden</h3>
+                        <table class="barber-hours-table">
+                            <tr><td>Maandag</td><td>09:00 – 18:00</td></tr>
+                            <tr><td>Dinsdag</td><td>09:00 – 18:00</td></tr>
+                            <tr><td>Woensdag</td><td>09:00 – 18:00</td></tr>
+                            <tr><td>Donderdag</td><td>09:00 – 20:00</td></tr>
+                            <tr><td>Vrijdag</td><td>09:00 – 20:00</td></tr>
+                            <tr><td>Zaterdag</td><td>08:00 – 17:00</td></tr>
+                            <tr class="barber-hours-closed"><td>Zondag</td><td>Gesloten</td></tr>
+                        </table>
+                        <p class="barber-hours-note">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Walk-ins zijn welkom. Voor kleurbehandelingen raden we een afspraak aan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- CTA --}}
+    <section class="barber-cta">
+        <div class="container text-center">
+            <h2>Klaar voor een frisse look?</h2>
+            <p>Kom langs in de shop of bel ons direct. Wij staan voor je klaar.</p>
+            <div class="barber-cta__actions">
+                <a href="tel:0201234567" class="btn btn-gold btn-lg">
+                    <i class="fas fa-phone me-2"></i>020 - 123 4567
+                </a>
+                @auth
+                    @if(Auth::user()->isEigenaar())
+                        <a href="{{ route('eigenaar.dashboard') }}" class="btn btn-outline-gold btn-lg">
+                            <i class="fas fa-crown me-2"></i>Eigenaar Dashboard
+                        </a>
+                    @elseif(Auth::user()->isManager())
+                        <a href="{{ route('medewerkers.index') }}" class="btn btn-outline-gold btn-lg">
+                            <i class="fas fa-users me-2"></i>Medewerkerbeheer
+                        </a>
+                    @elseif(Auth::user()->isKlant())
+                        <a href="{{ route('klant.dashboard') }}" class="btn btn-outline-gold btn-lg">
+                            <i class="fas fa-user me-2"></i>Mijn account
+                        </a>
+                    @endif
+                @else
+                    <a href="{{ route('register') }}" class="btn btn-outline-gold btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Klantaccount maken
+                    </a>
+                    <a href="{{ route('login') }}" class="btn btn-outline-gold btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Inloggen
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </section>
+
+</div>
 @endsection

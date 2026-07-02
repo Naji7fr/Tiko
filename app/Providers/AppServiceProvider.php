@@ -2,23 +2,22 @@
 
 namespace App\Providers;
 
+use App\Models\Medewerker\MedewerkerModel;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        // Route model binding: medewerker → MedewerkerModel (MVC)
+        Route::bind('medewerker', function (string $waarde): MedewerkerModel {
+            return MedewerkerModel::query()->findOrFail($waarde);
+        });
     }
 }
