@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Afspraak\StoreAfspraakRequest;
+use App\Http\Requests\Afspraak\UpdateAfspraakRequest;
 use App\Models\Afspraak;
 use App\Models\Behandeling;
 use App\Models\Klant;
@@ -18,6 +19,8 @@ class AfspraakController extends Controller
     /** GET /afspraken — Overzicht voor medewerker en klant. */
     public function index(): View|RedirectResponse
     {
+        abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
+
         try {
             $afspraken = Afspraak::query()
                 ->with(['klant.gebruiker.contactGegevens', 'medewerker.gebruiker.contactGegevens', 'behandeling'])
@@ -62,6 +65,10 @@ class AfspraakController extends Controller
                 ]);
             });
 
+            if ($request->user()?->isKlant()) {
+                return redirect()->route('afspraken.create')->with('success', 'Afspraak succesvol ingepland.');
+            }
+
             return redirect()->route('afspraken.index')->with('success', 'Afspraak succesvol ingepland.');
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'afspraak', 'store', $exception->getMessage());
@@ -77,6 +84,8 @@ class AfspraakController extends Controller
     /** GET /afspraken/{afspraak}/edit — Wijzigformulier. */
     public function edit(Afspraak $afspraak): View
     {
+        abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
+
         $behandelingen = Behandeling::orderBy('naam')->get();
         $medewerkers = MedewerkerModel::query()->with(['gebruiker.contactGegevens', 'specialisatie'])->get();
 
@@ -84,7 +93,7 @@ class AfspraakController extends Controller
     }
 
     /** PUT /afspraken/{afspraak} — Afspraak bijwerken. */
-    public function update(StoreAfspraakRequest $request, Afspraak $afspraak): RedirectResponse
+    public function update(UpdateAfspraakRequest $request, Afspraak $afspraak): RedirectResponse
     {
         try {
             $this->controleerBeschikbaarheid($request->medewerker_id, $request->afspraak_datum, $request->afspraak_tijd, $afspraak->id);
@@ -112,6 +121,8 @@ class AfspraakController extends Controller
     /** DELETE /afspraken/{afspraak} — Afspraak annuleren. */
     public function destroy(Afspraak $afspraak): RedirectResponse
     {
+        abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
+
         try {
             if ($afspraak->afspraak_datum < now()->toDateString()) {
                 throw ValidationException::withMessages([

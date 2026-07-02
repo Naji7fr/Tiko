@@ -129,7 +129,7 @@ class AfspraakCrudTest extends TestCase
             'opmerking' => 'Nieuwe afspraak',
         ]);
 
-        $response->assertRedirect(route('afspraken.index'));
+        $response->assertRedirect(route('afspraken.create'));
         $response->assertSessionHas('success');
         $this->assertDatabaseHas('afspraken', [
             'medewerker_id' => $medewerker->id,
@@ -147,6 +147,15 @@ class AfspraakCrudTest extends TestCase
 
         $conflictResponse->assertSessionHas('error');
         $conflictResponse->assertSessionHasErrors();
+    }
+
+    public function test_klant_heeft_geen_toegang_tot_afsprakenoverzicht(): void
+    {
+        $klant = $this->maakKlant('geen-overzicht@example.com');
+
+        $response = $this->actingAs($klant)->get(route('afspraken.index'));
+
+        $response->assertForbidden();
     }
 
     public function test_verstreken_afspraak_kan_niet_worden_verwijderd(): void

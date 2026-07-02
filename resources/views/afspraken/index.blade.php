@@ -37,7 +37,7 @@
                     <thead>
                         <tr>
                             <th>Tijd</th>
-                            <th>Klant</th>
+                            <th>Medewerker</th>
                             <th>Behandeling</th>
                             <th>Specialist</th>
                             <th>Opmerking</th>

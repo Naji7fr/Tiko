@@ -79,6 +79,11 @@
                                     <i class="fas fa-users me-1"></i>Medewerkers
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('afspraken.*') ? 'active' : '' }}" href="{{ route('afspraken.index') }}">
+                                    <i class="fas fa-calendar-alt me-1"></i>Afspraken
+                                </a>
+                            </li>
                         @elseif(Auth::user()->isKlant())
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('klant.*') ? 'active' : '' }}" href="{{ route('klant.dashboard') }}">
