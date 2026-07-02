@@ -17,6 +17,7 @@ use App\Http\Controllers\Klant\AccountController as KlantAccountController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KlantController;
 use App\Http\Controllers\Medewerker\MedewerkerController;
+use App\Http\Controllers\Medewerker\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // --- Publieke pagina's ---
@@ -55,5 +56,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
 
 // --- Medewerkerbeheer (admin + medewerker) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
+    Route::get('/product-overzicht', [ProductController::class, 'index'])->name('producten.index');
+    Route::get('/product-toevoegen', [ProductController::class, 'create'])->name('producten.create');
+    Route::post('/product-toevoegen', [ProductController::class, 'store'])->name('producten.store');
+    Route::get('/product-wijzigen/{id}', [ProductController::class, 'edit'])->name('producten.edit');
+    Route::put('/product-wijzigen/{id}', [ProductController::class, 'update'])->name('producten.update');
     Route::resource('medewerkers', MedewerkerController::class);
 });
