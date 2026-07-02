@@ -48,5 +48,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
 
 // --- Medewerkerbeheer (admin + medewerker) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
+    Route::get('/product-overzicht', [ProductController::class, 'index'])->name('producten.index');
     Route::resource('medewerkers', MedewerkerController::class);
 });
