@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KlantController;
 use App\Http\Controllers\Medewerker\MedewerkerController;
+use App\Http\Controllers\Medewerker\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // --- Publieke pagina's ---
@@ -45,7 +46,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
         ->name('module');
 });
 
+<<<<<<< Updated upstream
 // --- Medewerkerbeheer (admin + medewerker) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
+=======
+Route::middleware(['auth', 'role:admin,manager'])->group(function () {
+    Route::get('/product-overzicht', [ProductController::class, 'index'])->name('producten.index');
+>>>>>>> Stashed changes
     Route::resource('medewerkers', MedewerkerController::class);
 });
