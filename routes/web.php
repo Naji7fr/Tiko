@@ -46,12 +46,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
         ->name('module');
 });
 
-<<<<<<< Updated upstream
 // --- Medewerkerbeheer (admin + medewerker) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
-=======
-Route::middleware(['auth', 'role:admin,manager'])->group(function () {
-    Route::get('/product-overzicht', [ProductController::class, 'index'])->name('producten.index');
->>>>>>> Stashed changes
     Route::resource('medewerkers', MedewerkerController::class);
 });
