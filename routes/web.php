@@ -47,5 +47,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
 
 // --- Medewerkerbeheer (admin + medewerker) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
+    Route::get('/product-overzicht', [App\Http\Controllers\Medewerker\ProductController::class, 'index'])->name('producten.index');
+    Route::delete('/producten/{id}', [App\Http\Controllers\Medewerker\ProductController::class, 'destroy'])->name('producten.destroy');
     Route::resource('medewerkers', MedewerkerController::class);
 });
