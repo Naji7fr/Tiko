@@ -36,12 +36,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout.get');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/account/details', [KlantAccountController::class, 'details'])->name('account.details');
-    Route::get('/account/details/edit', [KlantAccountController::class, 'edit'])->name('account.details.edit');
-    Route::put('/account/details', [KlantAccountController::class, 'update'])->name('account.details.update');
-    Route::delete('/account/details', [KlantAccountController::class, 'destroy'])->name('account.details.destroy');
+    Route::get('/klant/overzicht', [KlantAccountController::class, 'details'])->name('klant.overzicht');
+    Route::get('/klant/overzicht/bewerken', [KlantAccountController::class, 'edit'])->name('klant.overzicht.edit');
+    Route::put('/klant/overzicht', [KlantAccountController::class, 'update'])->name('klant.overzicht.update');
+    Route::delete('/klant/overzicht', [KlantAccountController::class, 'destroy'])->name('klant.overzicht.destroy');
 
-    Route::get('/account/settings', [KlantAccountController::class, 'settings'])->name('account.settings');
+    Route::get('/klant/instellingen', [KlantAccountController::class, 'settings'])->name('klant.instellingen');
 
     Route::resource('afspraken', AfspraakController::class)->parameters([
         'afspraken' => 'afspraak',

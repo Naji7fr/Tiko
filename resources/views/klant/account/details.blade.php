@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Account details')
+@section('title', 'Klant Overzicht')
 
 @section('content')
 <div class="container py-5" style="padding-top: 6rem;">
@@ -16,9 +16,9 @@
 
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
                         <div>
-                            <span class="text-uppercase text-muted small fw-semibold">Account details</span>
+                            <span class="text-uppercase text-muted small fw-semibold">Klant Overzicht</span>
                             <h1 class="h3 mb-2">{{ trim(($user->voornaam ?? '') . ' ' . ($user->achternaam ?? '')) ?: $user->name }}</h1>
-                            <p class="text-muted mb-0">Bekijk de belangrijkste gegevens van dit account.</p>
+                            <p class="text-muted mb-0">Bekijk de belangrijkste gegevens van jouw klantprofiel.</p>
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             <a href="{{ route('logout.get') }}" class="btn btn-outline-danger">
@@ -75,7 +75,7 @@
                                     <i class="fas fa-user-xmark me-2"></i>Verwijder account
                                 </button>
                             @endif
-                            <a href="{{ route('account.details.edit') }}" class="btn btn-primary">
+                            <a href="{{ route('klant.overzicht.edit') }}" class="btn btn-primary">
                                 <i class="fas fa-pen me-2"></i>Update details
                             </a>
                         </div>

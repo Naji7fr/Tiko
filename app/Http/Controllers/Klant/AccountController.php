@@ -136,10 +136,10 @@ class AccountController extends Controller
             }
 
             return redirect()
-                ->route('account.details')
-                ->with('status', 'Account details zijn bijgewerkt.');
+                ->route('klant.overzicht')
+                ->with('status', 'Klantoverzicht is bijgewerkt.');
         } catch (Throwable $exception) {
-            Log::error('Account details bijwerken mislukt.', [
+            Log::error('Klantoverzicht bijwerken mislukt.', [
                 'user_id' => $request->user()?->id,
                 'exception' => $exception->getMessage(),
             ]);
@@ -147,7 +147,7 @@ class AccountController extends Controller
             return back()
                 ->withInput()
                 ->withErrors([
-                    'general' => 'De accountgegevens konden niet worden bijgewerkt. Probeer het opnieuw.',
+                    'general' => 'De klantgegevens konden niet worden bijgewerkt. Probeer het opnieuw.',
                 ]);
         }
     }
@@ -155,7 +155,7 @@ class AccountController extends Controller
     /** GET /account/settings — Redirect naar accountdetails. */
     public function settings(Request $request): RedirectResponse
     {
-        return redirect()->route('account.details');
+        return redirect()->route('klant.overzicht');
     }
 
     /**
