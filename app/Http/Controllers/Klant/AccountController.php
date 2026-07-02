@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Storage;
 
 class AccountController extends Controller
 {
@@ -78,7 +77,6 @@ class AccountController extends Controller
                 'voornaam' => ['required', 'string', 'max:255'],
                 'achternaam' => ['required', 'string', 'max:255'],
                 'email' => $emailRules,
-                'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
                 'telefoon' => ['nullable', 'string', 'max:25'],
                 'straat' => ['nullable', 'string', 'max:100'],
                 'huisnummer' => ['nullable', 'string', 'max:10'],
@@ -87,20 +85,11 @@ class AccountController extends Controller
                 'land' => ['nullable', 'string', 'max:50'],
             ]);
 
-            if ($request->hasFile('profile_photo')) {
-                if ($user->profile_photo_path) {
-                    Storage::disk('public')->delete($user->profile_photo_path);
-                }
-
-                $validated['profile_photo_path'] = $request->file('profile_photo')->store('profile-photos', 'public');
-            }
-
             $user->forceFill([
                 'voornaam' => $validated['voornaam'],
                 'achternaam' => $validated['achternaam'],
                 'name' => trim($validated['voornaam'] . ' ' . $validated['achternaam']),
                 'email' => $validated['email'],
-                'profile_photo_path' => $validated['profile_photo_path'] ?? $user->profile_photo_path,
             ])->save();
 
             if ($gebruiker) {

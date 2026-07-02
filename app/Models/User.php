@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Model: User (login-account voor beheerders én klanten).
@@ -19,13 +18,11 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /** @var list<string> Mass assignment: login- en profielvelden */
     protected $fillable = [
         'name',
         'voornaam',
         'achternaam',
         'email',
-        'profile_photo_path',
         'password',
         'role',
         'status',
@@ -76,11 +73,4 @@ class User extends Authenticatable
         return $this->hasOne(Klant::class);
     }
 
-    /** Bepaalt de zichtbare profielfoto of gebruikt een placeholder. */
-    public function getProfilePhotoUrlAttribute(): string
-    {
-        return $this->profile_photo_path
-            ? Storage::disk('public')->url($this->profile_photo_path)
-            : asset('images/profile-placeholder.svg');
-    }
 }

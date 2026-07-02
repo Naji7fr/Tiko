@@ -15,13 +15,10 @@
                     @endif
 
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="{{ $user->profile_photo_url }}" alt="Profielfoto van {{ $user->name }}" class="rounded-circle border" style="width: 5rem; height: 5rem; object-fit: cover;">
-                            <div>
-                                <span class="text-uppercase text-muted small fw-semibold">Account details</span>
-                                <h1 class="h3 mb-2">{{ trim(($user->voornaam ?? '') . ' ' . ($user->achternaam ?? '')) ?: $user->name }}</h1>
-                                <p class="text-muted mb-0">Bekijk de belangrijkste gegevens van dit account.</p>
-                            </div>
+                        <div>
+                            <span class="text-uppercase text-muted small fw-semibold">Account details</span>
+                            <h1 class="h3 mb-2">{{ trim(($user->voornaam ?? '') . ' ' . ($user->achternaam ?? '')) ?: $user->name }}</h1>
+                            <p class="text-muted mb-0">Bekijk de belangrijkste gegevens van dit account.</p>
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             <a href="{{ route('logout.get') }}" class="btn btn-outline-danger">

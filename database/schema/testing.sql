@@ -15,7 +15,6 @@ CREATE TABLE users (
     voornaam          VARCHAR(255)    NULL,
     achternaam        VARCHAR(255)    NULL,
     email             VARCHAR(255)    NOT NULL UNIQUE,
-    profile_photo_path VARCHAR(2048)   NULL,
     email_verified_at DATETIME        NULL,
     password          VARCHAR(255)    NOT NULL,
     role              VARCHAR(255)    NOT NULL DEFAULT 'klant',
