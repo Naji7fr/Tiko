@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/details', [KlantAccountController::class, 'details'])->name('account.details');
     Route::get('/account/details/edit', [KlantAccountController::class, 'edit'])->name('account.details.edit');
     Route::put('/account/details', [KlantAccountController::class, 'update'])->name('account.details.update');
+    Route::delete('/account/details', [KlantAccountController::class, 'destroy'])->name('account.details.destroy');
 
     Route::get('/account/settings', [KlantAccountController::class, 'settings'])->name('account.settings');
 });

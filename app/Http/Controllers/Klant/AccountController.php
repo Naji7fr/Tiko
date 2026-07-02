@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Klant;
 
 use App\Http\Controllers\Controller;
+use App\Models\Klant;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\Validation\Rule;
@@ -137,5 +140,49 @@ class AccountController extends Controller
     public function settings(Request $request): RedirectResponse
     {
         return redirect()->route('account.details');
+    }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()?->isKlant(), 403);
+
+        try {
+            $user = $request->user();
+            $klant = Klant::with(['gebruiker.contactGegevens', 'gebruiker.adres'])
+                ->where('user_id', $user->id)
+                ->first();
+
+            DB::transaction(function () use ($user, $klant): void {
+                $gebruiker = $klant?->gebruiker;
+                $adres = $gebruiker?->adres;
+
+                if ($adres) {
+                    $adres->delete();
+                }
+
+                if ($gebruiker) {
+                    $gebruiker->delete();
+                }
+
+                $user->delete();
+            });
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('home')
+                ->with('status', 'Je account is verwijderd.');
+        } catch (Throwable $exception) {
+            Log::error('Account verwijderen mislukt.', [
+                'user_id' => $request->user()?->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return back()->withErrors([
+                'general' => 'Je account kon niet worden verwijderd. Probeer het opnieuw.',
+            ]);
+        }
     }
 }
