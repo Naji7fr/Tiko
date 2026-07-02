@@ -65,7 +65,7 @@
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.accounts.index') }}"><i class="fas fa-user-shield me-2"></i>Accounts</a></li>
                                     <li><a class="dropdown-item" href="{{ route('medewerkers.index') }}"><i class="fas fa-users me-2"></i>Medewerkers</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'klanten') }}"><i class="fas fa-user-friends me-2"></i>Klanten</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'afspraken') }}"><i class="fas fa-calendar me-2"></i>Afspraken</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('afspraken.index') }}"><i class="fas fa-calendar me-2"></i>Afspraken</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'behandelingen') }}"><i class="fas fa-cut me-2"></i>Behandelingen</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'producten') }}"><i class="fas fa-box me-2"></i>Producten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'bestellingen') }}"><i class="fas fa-shopping-cart me-2"></i>Bestellingen</a></li>
@@ -79,10 +79,20 @@
                                     <i class="fas fa-users me-1"></i>Medewerkers
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('afspraken.*') ? 'active' : '' }}" href="{{ route('afspraken.index') }}">
+                                    <i class="fas fa-calendar-alt me-1"></i>Afspraken
+                                </a>
+                            </li>
                         @elseif(Auth::user()->isKlant())
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('klant.*') ? 'active' : '' }}" href="{{ route('klant.dashboard') }}">
                                     <i class="fas fa-user me-1"></i>Mijn account
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('afspraken.create') ? 'active' : '' }}" href="{{ route('afspraken.create') }}">
+                                    <i class="fas fa-calendar-plus me-1"></i>Afspraak maken
                                 </a>
                             </li>
                         @endif

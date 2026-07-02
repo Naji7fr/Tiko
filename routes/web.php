@@ -7,8 +7,10 @@
  * Klant:       /klant/*        (role: klant)
  * Eigenaar:    /eigenaar/*     (role: admin)
  * Medewerker:  /medewerkers/*  (role: admin, medewerker)
+ * Afspraken:   /afspraken/*    (auth — klant: aanmaken, medewerker/admin: beheer)
  */
 
+use App\Http\Controllers\AfspraakController;
 use App\Http\Controllers\Eigenaar\EigenaarDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -38,7 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account/details', [KlantAccountController::class, 'destroy'])->name('account.details.destroy');
 
     Route::get('/account/settings', [KlantAccountController::class, 'settings'])->name('account.settings');
+
+    Route::resource('afspraken', AfspraakController::class)->parameters([
+        'afspraken' => 'afspraak',
+    ]);
 });
+
 Route::middleware(['auth', 'role:klant'])->prefix('klant')->name('klant.')->group(function () {
     Route::get('/dashboard', [KlantController::class, 'dashboard'])->name('dashboard');
 });
@@ -48,9 +55,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
     Route::get('/dashboard', [EigenaarDashboardController::class, 'index'])->name('dashboard');
     Route::get('/rapportages', [EigenaarDashboardController::class, 'rapportages'])->name('rapportages');
     Route::resource('accounts', EigenaarAccountController::class)->except(['show']);
-    // Placeholder-modules (klanten, afspraken, …) — nog in ontwikkeling
+    // Placeholder-modules (klanten, …) — nog in ontwikkeling
     Route::get('/{module}', [EigenaarDashboardController::class, 'modulePlaceholder'])
-        ->where('module', 'klanten|afspraken|behandelingen|producten|bestellingen')
+        ->where('module', 'klanten|behandelingen|producten|bestellingen')
         ->name('module');
 });
 

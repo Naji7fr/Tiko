@@ -74,3 +74,27 @@ CREATE TABLE klanten (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (gebruiker_id) REFERENCES gebruikers (id) ON DELETE CASCADE
 );
+
+CREATE TABLE behandelingen (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    naam          VARCHAR(50)     NOT NULL UNIQUE,
+    duur_minuten  INTEGER         NOT NULL DEFAULT 30,
+    prijs         DECIMAL(8, 2)   NOT NULL,
+    created_at    DATETIME        NULL,
+    updated_at    DATETIME        NULL
+);
+
+CREATE TABLE afspraken (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    klant_id        INTEGER         NOT NULL,
+    medewerker_id   INTEGER         NOT NULL,
+    behandeling_id  INTEGER         NOT NULL,
+    afspraak_datum  DATE            NOT NULL,
+    afspraak_tijd   TIME            NOT NULL,
+    opmerking       VARCHAR(225)    NULL,
+    created_at      DATETIME        NULL,
+    updated_at      DATETIME        NULL,
+    FOREIGN KEY (klant_id) REFERENCES klanten (id),
+    FOREIGN KEY (medewerker_id) REFERENCES medewerkers (id),
+    FOREIGN KEY (behandeling_id) REFERENCES behandelingen (id)
+);

@@ -67,7 +67,6 @@ class EigenaarDashboardController extends Controller
     {
         $titel = match ($module) {
             'klanten' => 'Klanten',
-            'afspraken' => 'Afspraken',
             'behandelingen' => 'Behandelingen',
             'producten' => 'Producten',
             'bestellingen' => 'Bestellingen',
@@ -111,8 +110,8 @@ class EigenaarDashboardController extends Controller
                 'titel' => 'Afspraken',
                 'icoon' => 'fa-calendar-check',
                 'beschrijving' => 'Planning en agenda',
-                'route' => route('eigenaar.module', 'afspraken'),
-                'actief' => false,
+                'route' => route('afspraken.index'),
+                'actief' => true,
             ],
             [
                 'slug' => 'behandelingen',

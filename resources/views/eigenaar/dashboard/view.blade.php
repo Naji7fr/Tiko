@@ -94,7 +94,7 @@
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-calendar-alt me-2"></i>Komende afspraken</span>
-                    <a href="{{ route('eigenaar.module', 'afspraken') }}" class="btn btn-sm btn-light">Alles bekijken</a>
+                    <a href="{{ route('afspraken.index') }}" class="btn btn-sm btn-light">Alles bekijken</a>
                 </div>
                 <div class="card-body p-0">
                     @if($komendeAfspraken->isEmpty())
