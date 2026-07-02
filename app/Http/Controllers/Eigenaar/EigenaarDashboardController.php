@@ -77,10 +77,19 @@ class EigenaarDashboardController extends Controller
         return view('eigenaar.module.placeholder.view', compact('module', 'titel'));
     }
 
-    /** @return list<array<string, mixed>> */
+    /** @return list<array<string, mixed>> Beheermodule-kaarten voor het eigenaar-dashboard. */
     private function haalBeheermodules(): array
     {
+        // actief: true = module is gebouwd; false = placeholder-pagina
         return [
+            [
+                'slug' => 'accounts',
+                'titel' => 'Accounts',
+                'icoon' => 'fa-user-shield',
+                'beschrijving' => 'Loginaccounts voor eigenaar, medewerkers en klanten',
+                'route' => route('eigenaar.accounts.index'),
+                'actief' => true,
+            ],
             [
                 'slug' => 'medewerkers',
                 'titel' => 'Medewerkers',

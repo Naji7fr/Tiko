@@ -1,3 +1,4 @@
+{{-- auth.view — Inlogformulier (admin, medewerker, klant) --}}
 @extends('layouts.app')
 
 @section('title', 'Inloggen')

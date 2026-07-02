@@ -15,6 +15,7 @@ class EnsureAdminUser extends Command
 
     protected $description = 'Zorg dat admin@tiko.nl bestaat en actief is';
 
+    /** Maakt admin@tiko.nl aan of werkt wachtwoord/status bij. */
     public function handle(): int
     {
         $email = 'admin@tiko.nl';

@@ -7,6 +7,7 @@ use Database\Seeders\DatabaseSeeder;
 use Tests\Concerns\RefreshesTestDatabase;
 use Tests\TestCase;
 
+/** Feature tests: eigenaar-dashboard, rapportages en toegangscontrole. */
 class EigenaarDashboardTest extends TestCase
 {
     use RefreshesTestDatabase;
@@ -35,11 +36,11 @@ class EigenaarDashboardTest extends TestCase
         $response->assertSee('Rapportages');
     }
 
-    public function test_manager_heeft_geen_toegang_tot_eigenaar_dashboard(): void
+    public function test_medewerker_heeft_geen_toegang_tot_eigenaar_dashboard(): void
     {
-        $manager = User::factory()->create(['role' => 'manager', 'status' => 'Actief']);
+        $medewerker = User::factory()->create(['role' => 'medewerker', 'status' => 'Actief']);
 
-        $response = $this->actingAs($manager)->get(route('eigenaar.dashboard'));
+        $response = $this->actingAs($medewerker)->get(route('eigenaar.dashboard'));
 
         $response->assertRedirect(route('home'));
     }

@@ -1,3 +1,8 @@
+{{--
+    layouts.app — Hoofdlayout (navigatie, footer, scripts).
+    Responsive navbar met burger-menu onder 992px.
+    Modals: delete-bevestiging + actieve-medewerker blokkade.
+--}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -57,6 +62,7 @@
                                     <i class="fas fa-cog me-1"></i>Beheer
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ route('eigenaar.accounts.index') }}"><i class="fas fa-user-shield me-2"></i>Accounts</a></li>
                                     <li><a class="dropdown-item" href="{{ route('medewerkers.index') }}"><i class="fas fa-users me-2"></i>Medewerkers</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'klanten') }}"><i class="fas fa-user-friends me-2"></i>Klanten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'afspraken') }}"><i class="fas fa-calendar me-2"></i>Afspraken</a></li>
@@ -67,7 +73,7 @@
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.rapportages') }}"><i class="fas fa-chart-bar me-2"></i>Rapportages</a></li>
                                 </ul>
                             </li>
-                        @elseif(Auth::user()->isManager())
+                        @elseif(Auth::user()->isMedewerker())
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('medewerkers.*') ? 'active' : '' }}" href="{{ route('medewerkers.index') }}">
                                     <i class="fas fa-users me-1"></i>Medewerkers

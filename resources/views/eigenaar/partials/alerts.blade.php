@@ -1,3 +1,6 @@
+{{-- eigenaar.partial — Flash-meldingen en validatie-popup --}}
+@include('partials.validation-error-modal')
+
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}

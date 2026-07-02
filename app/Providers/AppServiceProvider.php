@@ -6,16 +6,23 @@ use App\Models\Medewerker\MedewerkerModel;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * AppServiceProvider — applicatie-brede bootstrapping.
+ *
+ * Registreert route model binding en andere globale configuratie.
+ */
 class AppServiceProvider extends ServiceProvider
 {
+    /** Registreer services in de container (niet gebruikt in dit project). */
     public function register(): void
     {
         //
     }
 
+    /** Bootstrapping na registratie: route bindings, view composers, etc. */
     public function boot(): void
     {
-        // Route model binding: medewerker → MedewerkerModel (MVC)
+        // {medewerker} in URL → MedewerkerModel (404 als niet gevonden)
         Route::bind('medewerker', function (string $waarde): MedewerkerModel {
             return MedewerkerModel::query()->findOrFail($waarde);
         });

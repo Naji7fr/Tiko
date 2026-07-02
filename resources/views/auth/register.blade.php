@@ -1,3 +1,4 @@
+{{-- auth.view — Klant-registratie (User + Gebruiker + Klant) --}}
 @extends('layouts.app')
 
 @section('title', 'Klantaccount aanmaken')

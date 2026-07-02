@@ -1,3 +1,4 @@
+{{-- klant.view — Klant-dashboard (Mijn account) --}}
 @extends('layouts.app')
 
 @section('title', 'Mijn account')

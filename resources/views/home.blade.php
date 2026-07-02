@@ -1,3 +1,7 @@
+{{--
+    home.view — Publieke barbershop homepage (hero, diensten, contact).
+    Dark/gold theme; navbar gebruikt barber-nav class.
+--}}
 @extends('layouts.app')
 
 @section('title', 'Tiko Barbershop — Sharp Cuts & Clean Fades')
@@ -255,7 +259,7 @@
                         <a href="{{ route('eigenaar.dashboard') }}" class="btn btn-outline-gold btn-lg">
                             <i class="fas fa-crown me-2"></i>Eigenaar Dashboard
                         </a>
-                    @elseif(Auth::user()->isManager())
+                    @elseif(Auth::user()->isMedewerker())
                         <a href="{{ route('medewerkers.index') }}" class="btn btn-outline-gold btn-lg">
                             <i class="fas fa-users me-2"></i>Medewerkerbeheer
                         </a>

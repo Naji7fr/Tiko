@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * Model: User (login-account voor beheerders én klanten).
  *
- * - admin / manager → medewerkerbeheer
+ * - admin / medewerker → medewerkerbeheer
  * - klant           → klant-portaal (dashboard, later afspraken)
  */
 class User extends Authenticatable
@@ -18,7 +18,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /** @var list<string> */
+    /** @var list<string> Mass assignment: login- en profielvelden */
     protected $fillable = [
         'name',
         'voornaam',
@@ -44,10 +44,10 @@ class User extends Authenticatable
         ];
     }
 
-    /** Controleer of de gebruiker beheerrechten heeft (admin of manager). */
+    /** Controleer of de gebruiker beheerrechten heeft (admin of medewerker). */
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['admin', 'manager'], true);
+        return in_array($this->role, ['admin', 'medewerker'], true);
     }
 
     /** Controleer of de gebruiker de eigenaar is (volledige toegang). */
@@ -56,10 +56,10 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    /** Controleer of de gebruiker alleen manager is. */
-    public function isManager(): bool
+    /** Controleer of de gebruiker een medewerker-account is (geen eigenaar). */
+    public function isMedewerker(): bool
     {
-        return $this->role === 'manager';
+        return $this->role === 'medewerker';
     }
 
     /** Controleer of de gebruiker een klant is. */

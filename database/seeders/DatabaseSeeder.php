@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(TikoSeeder::class);
 
+        // Standaard eigenaar-account voor development en tests
         User::updateOrCreate(
             ['email' => 'admin@tiko.nl'],
             [

@@ -12,6 +12,7 @@ class TikoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Standaard kapper-specialisaties (Fade, Baard, Kleuren)
         foreach (['Fade', 'Baard', 'Kleuren'] as $naam) {
             SpecialisatieModel::firstOrCreate(['naam' => $naam]);
         }

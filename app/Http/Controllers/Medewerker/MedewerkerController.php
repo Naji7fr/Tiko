@@ -139,6 +139,7 @@ class MedewerkerController extends Controller
     public function destroy(MedewerkerModel $medewerker): RedirectResponse
     {
         if ($medewerker->is_actief) {
+            // Business rule: actieve medewerkers niet verwijderbaar (ook in SP + modal)
             return redirect()
                 ->route('medewerkers.index')
                 ->with('error', 'Actieve medewerkers kunnen niet worden verwijderd');

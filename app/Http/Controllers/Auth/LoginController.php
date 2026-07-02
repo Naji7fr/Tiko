@@ -12,7 +12,10 @@ use Illuminate\View\View;
 /**
  * Controller voor inloggen en uitloggen (authenticatie).
  *
- * Gebruikt het User-model voor backoffice-toegang (admin/manager).
+ * Redirect na login:
+ *   admin   → eigenaar-dashboard
+ *   medewerker → medewerkerbeheer
+ *   klant   → klant-dashboard
  */
 class LoginController extends Controller
 {
@@ -55,7 +58,7 @@ class LoginController extends Controller
             ]);
         }
 
-        // Eigenaar → dashboard, manager → medewerkerbeheer, klant → klant-portaal
+        // Eigenaar → dashboard, medewerker → medewerkerbeheer, klant → klant-portaal
         if ($user->isEigenaar()) {
             return redirect()->intended(route('eigenaar.dashboard'));
         }

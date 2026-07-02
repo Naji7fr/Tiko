@@ -204,10 +204,12 @@ class MedewerkerService
             ?? MedewerkerModel::findOrFail($medewerkerId);
     }
 
+    /** Fallback voor tests: Eloquent-transactie i.p.v. stored procedure. */
     /** @param array<string, mixed> $gevalideerdeData */
     private function voegToeViaTransactie(array $gevalideerdeData): MedewerkerModel
     {
         return DB::transaction(function () use ($gevalideerdeData): MedewerkerModel {
+            // ERD: eerst contact, dan gebruiker, dan medewerker
             $contact = ContactGegevensModel::create([
                 'email' => $gevalideerdeData['email'],
                 'telefoon' => $gevalideerdeData['telefoon'] ?? null,
@@ -310,6 +312,7 @@ class MedewerkerService
         );
     }
 
+    /** Verwijdert medewerker + gekoppelde gebruiker + contact (SQLite/tests). */
     private function verwijderViaTransactie(MedewerkerModel $medewerker): void
     {
         DB::transaction(function () use ($medewerker): void {

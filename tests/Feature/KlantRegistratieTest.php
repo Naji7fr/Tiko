@@ -10,6 +10,7 @@ use Database\Seeders\TikoSeeder;
 use Tests\Concerns\RefreshesTestDatabase;
 use Tests\TestCase;
 
+/** Feature tests: klant-registratie, dashboard en rol-scheiding. */
 class KlantRegistratieTest extends TestCase
 {
     use RefreshesTestDatabase;

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Tests\Concerns\RefreshesTestDatabase;
 use Tests\TestCase;
 
+/** Feature tests: admin-login en redirect naar eigenaar-dashboard. */
 class AdminLoginTest extends TestCase
 {
     use RefreshesTestDatabase;

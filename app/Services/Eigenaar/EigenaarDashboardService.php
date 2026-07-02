@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class EigenaarDashboardService
 {
+    /** Kerncijfers voor dashboard-tegels (telt 0 als tabel ontbreekt). */
     /** @return array<string, int|float> */
     public function haalStatistiekenOp(): array
     {
@@ -31,6 +32,7 @@ class EigenaarDashboardService
         ];
     }
 
+    /** Komende afspraken met INNER JOINs (klant + medewerker + behandeling). */
     /** @return Collection<int, object> */
     public function haalKomendeAfsprakenOp(int $limiet = 5): Collection
     {
@@ -59,6 +61,7 @@ class EigenaarDashboardService
             ->get());
     }
 
+    /** Laatste bestellingen met klantnaam via JOIN. */
     /** @return Collection<int, object> */
     public function haalRecenteBestellingenOp(int $limiet = 5): Collection
     {
@@ -82,6 +85,7 @@ class EigenaarDashboardService
             ->get());
     }
 
+    /** Volledige rapportage-payload voor /eigenaar/rapportages. */
     /** @return array<string, mixed> */
     public function haalRapportageSamenvattingOp(): array
     {
@@ -94,6 +98,7 @@ class EigenaarDashboardService
         ];
     }
 
+    /** Top 5 meest geboekte behandelingen (JOIN afspraken → behandelingen). */
     /** @return Collection<int, object> */
     private function haalTopBehandelingen(): Collection
     {
@@ -110,6 +115,7 @@ class EigenaarDashboardService
             ->get());
     }
 
+    /** Aantal bestellingen en omzet gegroepeerd per status. */
     /** @return Collection<int, object> */
     private function haalBestellingenPerStatus(): Collection
     {
@@ -124,6 +130,7 @@ class EigenaarDashboardService
             ->get());
     }
 
+    /** Telt rijen in een tabel; retourneert 0 als de tabel niet bestaat. */
     private function telRecords(string $tabel): int
     {
         if (! Schema::hasTable($tabel)) {
@@ -133,6 +140,7 @@ class EigenaarDashboardService
         return (int) DB::table($tabel)->count();
     }
 
+    /** Telt rijen waar kolom = waarde. */
     private function telRecordsWaar(string $tabel, string $kolom, mixed $waarde): int
     {
         if (! Schema::hasTable($tabel)) {
@@ -183,6 +191,7 @@ class EigenaarDashboardService
             ->sum('totaal_prijs');
     }
 
+    /** Controleert of alle opgegeven tabellen in de database bestaan. */
     /** @param list<string> $tabellen */
     private function heeftTabellen(array $tabellen): bool
     {

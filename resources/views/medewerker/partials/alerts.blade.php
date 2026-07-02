@@ -1,17 +1,7 @@
 {{--
-    medewerker.view — Flash-meldingen en validatiefouten (terugkoppeling eindgebruiker).
+    medewerker.view — Flash-meldingen (success/error) en validatie-popup.
 --}}
-@if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i><strong>Controleer het formulier:</strong>
-        <ul class="mb-0 mt-2">
-            @foreach($errors->all() as $foutmelding)
-                <li>{{ $foutmelding }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
-    </div>
-@endif
+@include('partials.validation-error-modal')
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">

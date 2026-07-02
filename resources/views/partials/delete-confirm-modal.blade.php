@@ -4,13 +4,13 @@
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title" id="deleteConfirmModalLabel">
-                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Medewerker verwijderen
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Verwijderen bevestigen
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
             </div>
             <div class="modal-body">
                 <p class="mb-0">
-                    Weet je zeker dat je <strong id="deleteConfirmName">deze medewerker</strong> wilt verwijderen?
+                    Weet je zeker dat je <strong id="deleteConfirmName">dit item</strong> wilt verwijderen?
                 </p>
                 <p class="text-muted small mb-0 mt-2">Deze actie kan niet ongedaan worden gemaakt.</p>
             </div>

@@ -1,3 +1,4 @@
+{{-- medewerker.partial — Kaartweergave mobiel/tablet (onder lg) --}}
 @php
     $medewerkerId = $medewerker->id ?? $medewerker->medewerker_id;
     $statusLabel = $medewerker->status ?? ($medewerker->is_actief ? 'Actief' : 'Inactief');

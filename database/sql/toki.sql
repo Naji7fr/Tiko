@@ -10,6 +10,9 @@
 --   Afspraken, Behandeling, BehandelingProducten
 --   Bestelling, BestellingProduct, Product, Voorraad, Categorie
 --   Leverancier, LeverancierGegevens
+--
+-- JOIN-views (sectie 9): v_medewerker_overzicht, v_klant_overzicht, …
+-- Stored procedures: database/sql/medewerker_stored_procedures.sql
 -- =============================================================================
 
 CREATE DATABASE IF NOT EXISTS `toki`
@@ -20,6 +23,13 @@ USE `toki`;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+DROP VIEW IF EXISTS
+    `v_producten_overzicht`,
+    `v_bestellingen_overzicht`,
+    `v_afspraken_overzicht`,
+    `v_klant_overzicht`,
+    `v_medewerker_overzicht`;
 
 DROP TABLE IF EXISTS
     `afspraken`, `bestelling_producten`, `bestellingen`,
@@ -419,7 +429,7 @@ CREATE TABLE `afspraken` (
 
 
 -- =============================================================================
--- 10. TECHNISCHE LOG + STORED PROCEDURES (medewerker-module)
+-- 8. TECHNISCHE LOG
 -- =============================================================================
 
 CREATE TABLE `technische_logs` (
@@ -438,7 +448,144 @@ CREATE TABLE `technische_logs` (
 
 
 -- =============================================================================
--- 9. STARTDATA (medewerker + overig)
+-- 9. VIEWS MET INNER JOINs (ERD-koppelingen)
+-- =============================================================================
+-- Herbruikbare overzichten via JOINs over gerelateerde tabellen.
+-- Gebruik: SELECT * FROM v_medewerker_overzicht;
+-- =============================================================================
+
+-- Medewerker: medewerkers → gebruikers → contact_gegevens + specialisaties
+CREATE VIEW `v_medewerker_overzicht` AS
+SELECT
+    m.id                AS medewerker_id,
+    m.is_actief,
+    m.specialisatie_id,
+    m.gebruiker_id,
+    g.voornaam,
+    g.tussenvoegsel,
+    g.achternaam,
+    g.volledig_naam,
+    cg.email,
+    cg.telefoon,
+    s.naam              AS specialisatie_naam,
+    m.created_at,
+    m.updated_at
+FROM medewerkers m
+INNER JOIN gebruikers g
+    ON m.gebruiker_id = g.id
+INNER JOIN contact_gegevens cg
+    ON g.contact_gegevens_id = cg.id
+INNER JOIN specialisaties s
+    ON m.specialisatie_id = s.id;
+
+-- Klant: klanten → gebruikers → contact_gegevens (+ optioneel adres)
+CREATE VIEW `v_klant_overzicht` AS
+SELECT
+    k.id                AS klant_id,
+    k.user_id,
+    g.id                AS gebruiker_id,
+    g.volledig_naam,
+    g.voornaam,
+    g.achternaam,
+    cg.email,
+    cg.telefoon,
+    a.straat,
+    a.huisnummer,
+    a.postcode,
+    a.plaats,
+    a.land,
+    k.created_at,
+    k.updated_at
+FROM klanten k
+INNER JOIN gebruikers g
+    ON k.gebruiker_id = g.id
+INNER JOIN contact_gegevens cg
+    ON g.contact_gegevens_id = cg.id
+LEFT JOIN adressen a
+    ON g.adres_id = a.id;
+
+-- Afspraken: afspraken → klant, medewerker, behandeling (dubbele join op gebruikers)
+CREATE VIEW `v_afspraken_overzicht` AS
+SELECT
+    a.id                AS afspraak_id,
+    a.afspraak_datum,
+    a.afspraak_tijd,
+    a.opmerking,
+    kg.volledig_naam    AS klant_naam,
+    cg_klant.email      AS klant_email,
+    mg.volledig_naam    AS medewerker_naam,
+    s.naam              AS medewerker_specialisatie,
+    b.naam              AS behandeling_naam,
+    b.duur_minuten,
+    b.prijs             AS behandeling_prijs,
+    a.created_at,
+    a.updated_at
+FROM afspraken a
+INNER JOIN klanten k
+    ON a.klant_id = k.id
+INNER JOIN gebruikers kg
+    ON k.gebruiker_id = kg.id
+INNER JOIN contact_gegevens cg_klant
+    ON kg.contact_gegevens_id = cg_klant.id
+INNER JOIN medewerkers m
+    ON a.medewerker_id = m.id
+INNER JOIN gebruikers mg
+    ON m.gebruiker_id = mg.id
+INNER JOIN specialisaties s
+    ON m.specialisatie_id = s.id
+INNER JOIN behandelingen b
+    ON a.behandeling_id = b.id;
+
+-- Bestellingen: bestellingen → klanten → gebruikers
+CREATE VIEW `v_bestellingen_overzicht` AS
+SELECT
+    bs.id               AS bestelling_id,
+    bs.bestel_datum,
+    bs.status,
+    bs.totaal_prijs,
+    k.id                AS klant_id,
+    g.volledig_naam     AS klant_naam,
+    cg.email            AS klant_email,
+    bs.created_at,
+    bs.updated_at
+FROM bestellingen bs
+INNER JOIN klanten k
+    ON bs.klant_id = k.id
+INNER JOIN gebruikers g
+    ON k.gebruiker_id = g.id
+INNER JOIN contact_gegevens cg
+    ON g.contact_gegevens_id = cg.id;
+
+-- Producten: producten → categorieen + leveranciers → leverancier_gegevens
+CREATE VIEW `v_producten_overzicht` AS
+SELECT
+    p.id                AS product_id,
+    p.naam              AS product_naam,
+    p.beschrijving,
+    p.prijs,
+    c.id                AS categorie_id,
+    c.naam              AS categorie_naam,
+    l.id                AS leverancier_id,
+    lg.bedrijfsnaam     AS leverancier_naam,
+    lg.email            AS leverancier_email,
+    lg.telefoon         AS leverancier_telefoon,
+    v.aantal            AS voorraad_aantal,
+    v.minimum           AS voorraad_minimum,
+    p.created_at,
+    p.updated_at
+FROM producten p
+INNER JOIN categorieen c
+    ON p.categorie_id = c.id
+INNER JOIN leveranciers l
+    ON p.leverancier_id = l.id
+INNER JOIN leverancier_gegevens lg
+    ON l.leverancier_gegevens_id = lg.id
+LEFT JOIN voorraad v
+    ON v.product_id = p.id;
+
+
+-- =============================================================================
+-- 10. STARTDATA (medewerker + overig)
 -- =============================================================================
 
 -- Medewerker-module
@@ -466,3 +613,6 @@ INSERT INTO `users` (
     NOW(), '$2y$12$i.drMAcWW6u0rQsAGXkpA.FE0.uZfW9/CyTfHn8fI4Cj08rcNDZSq',
     'admin', 'Actief', NOW(), NOW()
 );
+
+-- Migratie: oude rolnaam 'manager' → 'medewerker' (bestaande databases)
+UPDATE `users` SET `role` = 'medewerker' WHERE `role` = 'manager';

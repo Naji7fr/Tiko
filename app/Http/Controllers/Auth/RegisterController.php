@@ -51,7 +51,9 @@ class RegisterController extends Controller
 
         $username = $this->generateUniqueUsername($validated['voornaam'], $validated['achternaam']);
 
+        // Transactie: User + ContactGegevens + Gebruiker + Klant atomisch aanmaken
         DB::transaction(function () use ($validated, $username): void {
+            // 1. Login-account (Laravel users)
             $user = User::create([
                 'name' => $username,
                 'voornaam' => $validated['voornaam'],
@@ -62,11 +64,13 @@ class RegisterController extends Controller
                 'status' => 'Actief',
             ]);
 
+            // 2. Contactgegevens (e-mail, telefoon)
             $contact = ContactGegevensModel::create([
                 'email' => $validated['email'],
                 'telefoon' => $validated['telefoon'] ?? null,
             ]);
 
+            // 3. Persoonsgegevens (gebruikers-tabel)
             $gebruiker = GebruikerModel::create([
                 'contact_gegevens_id' => $contact->id,
                 'voornaam' => $validated['voornaam'],
@@ -78,12 +82,14 @@ class RegisterController extends Controller
                 ),
             ]);
 
+            // 4. Klantprofiel koppelen aan user + gebruiker
             Klant::create([
                 'user_id' => $user->id,
                 'gebruiker_id' => $gebruiker->id,
             ]);
         });
 
+        // Direct inloggen na succesvolle registratie
         Auth::attempt([
             'email' => $validated['email'],
             'password' => $validated['password'],

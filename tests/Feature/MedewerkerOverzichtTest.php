@@ -9,6 +9,7 @@ use Database\Seeders\TikoSeeder;
 use Tests\Concerns\RefreshesTestDatabase;
 use Tests\TestCase;
 
+/** Feature tests: medewerker CRUD, validatie en verwijderregels. */
 class MedewerkerOverzichtTest extends TestCase
 {
     use RefreshesTestDatabase;
@@ -91,11 +92,22 @@ class MedewerkerOverzichtTest extends TestCase
         $response->assertSessionHasErrors(['email' => 'Deze e-mail bestaat al.']);
     }
 
+    /**
+     * Scenario: medewerker wordt succesvol gewijzigd
+     * Home → overzicht → wijzigen → telefoon aanpassen → opslaan → zichtbaar in overzicht
+     */
     public function test_medewerker_wordt_succesvol_gewijzigd(): void
     {
         $medewerker = MedewerkerModel::factory()->actief()->create([
+            'naam' => 'Jan de Vries',
             'telefoonnummer' => '0612345678',
         ]);
+
+        $this->actingAs($this->admin)->get(route('home'))->assertOk();
+        $this->actingAs($this->admin)->get(route('medewerkers.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('medewerkers.edit', $medewerker))
+            ->assertOk()
+            ->assertSee('Medewerker wijzigen');
 
         $response = $this->actingAs($this->admin)->put(route('medewerkers.update', $medewerker), [
             'voornaam' => $medewerker->gebruiker->voornaam,
@@ -115,7 +127,46 @@ class MedewerkerOverzichtTest extends TestCase
         ]);
 
         $overview = $this->actingAs($this->admin)->get(route('medewerkers.index'));
+        $overview->assertOk();
+        $overview->assertSee('Jan de Vries');
         $overview->assertSee('0687654321');
+    }
+
+    /**
+     * Scenario: medewerker wordt niet gewijzigd (bestaand telefoonnummer)
+     */
+    public function test_medewerker_wordt_niet_gewijzigd_bij_bestaand_telefoonnummer(): void
+    {
+        MedewerkerModel::factory()->actief()->create([
+            'telefoonnummer' => '0611111111',
+        ]);
+
+        $medewerker = MedewerkerModel::factory()->actief()->create([
+            'telefoonnummer' => '0622222222',
+        ]);
+
+        $this->actingAs($this->admin)->get(route('home'))->assertOk();
+        $this->actingAs($this->admin)->get(route('medewerkers.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('medewerkers.edit', $medewerker))
+            ->assertOk()
+            ->assertSee('Medewerker wijzigen');
+
+        $response = $this->actingAs($this->admin)->put(route('medewerkers.update', $medewerker), [
+            'voornaam' => $medewerker->gebruiker->voornaam,
+            'achternaam' => $medewerker->gebruiker->achternaam,
+            'email' => $medewerker->email,
+            'telefoon' => '0611111111',
+            'specialisatie_id' => $medewerker->specialisatie_id,
+            'is_actief' => '1',
+        ]);
+
+        $response->assertSessionHasErrors(['telefoon']);
+        $response->assertSessionHasErrors(['telefoon' => 'Dit telefoonnummer bestaat al.']);
+
+        $this->assertDatabaseHas('contact_gegevens', [
+            'id' => $medewerker->gebruiker->contact_gegevens_id,
+            'telefoon' => '0622222222',
+        ]);
     }
 
     public function test_medewerker_wordt_niet_gewijzigd_bij_ongeldig_telefoonnummer(): void
