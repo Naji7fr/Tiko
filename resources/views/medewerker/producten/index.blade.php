@@ -41,13 +41,13 @@
                                     <td>{{ $product->voorraad }}</td>
                                     <td>{{ $product->leverancier_naam ?? 'Onbekend' }}</td>
                                     <td>
-                                        <form method="POST" action="{{ route('producten.destroy', $product->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fas fa-trash me-1"></i>Verwijderen
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                data-delete-trigger
+                                                data-delete-url="{{ route('producten.destroy', $product->id) }}"
+                                                data-delete-name="{{ $product->product_naam }}">
+                                            <i class="fas fa-trash me-1"></i>Verwijderen
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
