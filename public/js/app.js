@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDeleteConfirmModal();
     initMobileNav();
     initValidationErrorModal();
+    initAutoDismissFlashAlerts();
 });
 
 /**
@@ -26,6 +27,11 @@ function initDeleteConfirmModal() {
     const form = document.getElementById('deleteConfirmForm');
     const nameEl = document.getElementById('deleteConfirmName');
     const blockedNameEl = document.getElementById('deleteBlockedName');
+    const titleEl = document.getElementById('deleteConfirmTitle');
+    const hintEl = document.getElementById('deleteConfirmHint');
+    const questionEl = document.getElementById('deleteConfirmQuestion');
+    const submitLabelEl = document.getElementById('deleteConfirmSubmitLabel');
+    const cancelBtn = document.getElementById('deleteConfirmCancel');
     const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
     const blockedModal = blockedModalEl ? new bootstrap.Modal(blockedModalEl) : null;
 
@@ -35,6 +41,7 @@ function initDeleteConfirmModal() {
 
             const name = trigger.dataset.deleteName || 'deze medewerker';
             const isActief = trigger.dataset.deleteActief === '1';
+            const mode = trigger.dataset.deleteMode || 'verwijderen';
 
             // Actieve medewerker: toon foutmodal, geen DELETE
             if (isActief) {
@@ -52,8 +59,22 @@ function initDeleteConfirmModal() {
             }
 
             form.action = url;
-            if (nameEl) {
+            if (nameEl && mode !== 'annuleer' && mode !== 'verwijderen') {
                 nameEl.textContent = name;
+            }
+
+            if (mode === 'annuleer') {
+                if (titleEl) titleEl.textContent = 'Annulering bevestigen';
+                if (questionEl) questionEl.innerHTML = `Weet je zeker dat je <strong>${name}</strong> wilt annuleren?`;
+                if (hintEl) hintEl.textContent = 'Het tijdstip wordt direct weer vrijgegeven voor nieuwe afspraken.';
+                if (submitLabelEl) submitLabelEl.textContent = 'Ja, annuleren';
+                if (cancelBtn) cancelBtn.textContent = 'Terug';
+            } else {
+                if (titleEl) titleEl.textContent = 'Verwijderen bevestigen';
+                if (questionEl) questionEl.innerHTML = `Weet je zeker dat je <strong>${name}</strong> wilt verwijderen?`;
+                if (hintEl) hintEl.textContent = 'Deze actie kan niet ongedaan worden gemaakt.';
+                if (submitLabelEl) submitLabelEl.textContent = 'Ja, verwijderen';
+                if (cancelBtn) cancelBtn.textContent = 'Annuleren';
             }
 
             confirmModal?.show();
@@ -70,6 +91,21 @@ function initValidationErrorModal() {
     }
 
     bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+/** Verbergt success/info flash-meldingen automatisch na 5 seconden. */
+function initAutoDismissFlashAlerts() {
+    const dismissAfterMs = 5000;
+
+    document.querySelectorAll('.alert-success, .alert-info').forEach((alertEl) => {
+        if (!alertEl.classList.contains('alert-dismissible')) {
+            return;
+        }
+
+        setTimeout(() => {
+            bootstrap.Alert.getOrCreateInstance(alertEl).close();
+        }, dismissAfterMs);
+    });
 }
 
 /** Sluit het burger-menu automatisch na navigatie (viewport < 992px). */

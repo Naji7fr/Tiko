@@ -53,8 +53,18 @@
                     @auth
                         @if(Auth::user()->isEigenaar())
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('eigenaar.*') ? 'active' : '' }}" href="{{ route('eigenaar.dashboard') }}">
+                                <a class="nav-link {{ request()->routeIs('eigenaar.dashboard') ? 'active' : '' }}" href="{{ route('eigenaar.dashboard') }}">
                                     <i class="fas fa-crown me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('medewerkers.*') ? 'active' : '' }}" href="{{ route('medewerkers.index') }}">
+                                    <i class="fas fa-users me-1"></i>Medewerkers beheren
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('producten.*') ? 'active' : '' }}" href="{{ route('producten.index') }}">
+                                    <i class="fas fa-box me-1"></i>Producten
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -63,11 +73,11 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.accounts.index') }}"><i class="fas fa-user-shield me-2"></i>Accounts</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('medewerkers.index') }}"><i class="fas fa-users me-2"></i>Medewerkers</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'klanten') }}"><i class="fas fa-user-friends me-2"></i>Klanten</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('medewerkers.index') }}"><i class="fas fa-users me-2"></i>Medewerkers beheren</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('eigenaar.klanten.index') }}"><i class="fas fa-user-friends me-2"></i>Klanten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('afspraken.index') }}"><i class="fas fa-calendar me-2"></i>Afspraken</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'behandelingen') }}"><i class="fas fa-cut me-2"></i>Behandelingen</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'producten') }}"><i class="fas fa-box me-2"></i>Producten</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('producten.index') }}"><i class="fas fa-box me-2"></i>Producten</a></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.module', 'bestellingen') }}"><i class="fas fa-shopping-cart me-2"></i>Bestellingen</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('eigenaar.rapportages') }}"><i class="fas fa-chart-bar me-2"></i>Rapportages</a></li>
@@ -75,8 +85,8 @@
                             </li>
                         @elseif(Auth::user()->isMedewerker())
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('medewerkers.*') ? 'active' : '' }}" href="{{ route('medewerkers.index') }}">
-                                    <i class="fas fa-users me-1"></i>Medewerkers
+                                <a class="nav-link {{ request()->routeIs('producten.*') ? 'active' : '' }}" href="{{ route('producten.index') }}">
+                                    <i class="fas fa-box me-1"></i>Producten
                                 </a>
                             </li>
                             <li class="nav-item">

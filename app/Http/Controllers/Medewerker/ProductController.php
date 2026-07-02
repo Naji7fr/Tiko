@@ -42,7 +42,7 @@ class ProductController extends Controller
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'producten', 'index', $exception->getMessage());
 
-            return redirect()->route('medewerkers.index')
+            return redirect()->route('producten.index')
                 ->with('error', 'Productoverzicht kon niet worden geladen.');
         }
     }

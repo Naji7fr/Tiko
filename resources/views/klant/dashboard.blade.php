@@ -50,19 +50,24 @@
             </div>
         </div>
 
-        {{-- Toekomstige features --}}
+        {{-- Afspraken --}}
         <div class="col-lg-7">
             <div class="card h-100">
-                <div class="card-header">
-                    <i class="fas fa-calendar-check me-2"></i>Mijn afspraken
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-calendar-check me-2"></i>Mijn afspraken</span>
+                    <a href="{{ route('afspraken.create') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Afspraak maken
+                    </a>
                 </div>
                 <div class="card-body text-center py-5">
                     <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Binnenkort beschikbaar</h4>
-                    <p class="text-muted mb-0">
-                        Hier kun je straks je afspraken bekijken en boeken.
-                        Deze functie wordt toegevoegd wanneer het boekingssysteem klaar is.
+                    <h4 class="text-muted">Plan je volgende bezoek</h4>
+                    <p class="text-muted mb-4">
+                        Kies een behandeling, specialist, datum en tijd die voor jou schikt.
                     </p>
+                    <a href="{{ route('afspraken.create') }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus me-2"></i>Nieuwe afspraak inplannen
+                    </a>
                 </div>
             </div>
         </div>

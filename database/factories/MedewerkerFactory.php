@@ -6,6 +6,7 @@ use App\Models\Medewerker\ContactGegevensModel;
 use App\Models\Medewerker\GebruikerModel;
 use App\Models\Medewerker\MedewerkerModel;
 use App\Models\Medewerker\SpecialisatieModel;
+use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -91,10 +92,14 @@ class MedewerkerFactory extends Factory
             'volledig_naam' => GebruikerModel::bouwVolledigNaam($voornaam, $tussenvoegsel, $achternaam),
         ]);
 
-        return MedewerkerModel::create(array_merge([
+        $medewerker = MedewerkerModel::create(array_merge([
             'gebruiker_id' => $gebruiker->id,
             'specialisatie_id' => $specialisatieId,
             'is_actief' => $isActief,
         ], $resolved));
+
+        app(MedewerkerBeschikbaarheidService::class)->sync($medewerker->id);
+
+        return $medewerker;
     }
 }

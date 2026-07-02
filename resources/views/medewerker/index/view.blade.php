@@ -47,12 +47,16 @@
                             <th><i class="fas fa-phone me-2"></i>Telefoonnummer</th>
                             <th><i class="fas fa-info-circle me-2"></i>Status</th>
                             <th><i class="fas fa-scissors me-2"></i>Specialisatie</th>
+                            <th><i class="fas fa-calendar-week me-2"></i>Beschikbaarheid</th>
                             <th class="text-end"><i class="fas fa-cog me-2"></i>Acties</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($medewerkers as $medewerker)
-                            @include('medewerker.partials.rij-desktop', ['medewerker' => $medewerker])
+                            @include('medewerker.partials.rij-desktop', [
+                                'medewerker' => $medewerker,
+                                'beschikbaarheidSamenvattingen' => $beschikbaarheidSamenvattingen ?? [],
+                            ])
                         @endforeach
                     </tbody>
                 </table>
@@ -62,7 +66,10 @@
         {{-- Mobiele kaarten --}}
         <div class="medewerker-mobile-list d-lg-none">
             @foreach($medewerkers as $medewerker)
-                @include('medewerker.partials.kaart-mobiel', ['medewerker' => $medewerker])
+                @include('medewerker.partials.kaart-mobiel', [
+                    'medewerker' => $medewerker,
+                    'beschikbaarheidSamenvattingen' => $beschikbaarheidSamenvattingen ?? [],
+                ])
             @endforeach
         </div>
     @endif

@@ -19,6 +19,20 @@
                 @csrf
                 @method('PUT')
 
+                <div class="col-12">
+                    <label for="klant_id" class="form-label">Klant</label>
+                    <select name="klant_id" id="klant_id" class="form-select @error('klant_id') is-invalid @enderror" required>
+                        @foreach($klanten as $klant)
+                            <option value="{{ $klant->id }}" {{ (string) old('klant_id', $afspraak->klant_id) === (string) $klant->id ? 'selected' : '' }}>
+                                {{ $klant->gebruiker?->volledig_naam ?? 'Onbekend' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('klant_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="col-md-6">
                     <label for="behandeling_id" class="form-label">Behandeling</label>
                     <select name="behandeling_id" id="behandeling_id" class="form-select" required>

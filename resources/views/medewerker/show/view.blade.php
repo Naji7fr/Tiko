@@ -4,6 +4,9 @@
 @section('title', $medewerker->naam)
 
 @section('content')
+@php
+    use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
+@endphp
 <div class="page-header">
     <div class="container">
         <h1><i class="fas fa-user me-3"></i>{{ $medewerker->naam }}</h1>
@@ -35,6 +38,25 @@
         <div class="card-body">
             <p class="mb-1"><strong>Specialisatie:</strong> {{ $medewerker->specialisatie->naam }}</p>
             <p class="mb-0"><strong>Status:</strong> {{ $medewerker->status }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-calendar-week me-2"></i>Beschikbaarheid</div>
+        <div class="card-body">
+            <p class="mb-3"><strong>Overzicht:</strong> {{ $beschikbaarheidSamenvatting ?? '—' }}</p>
+            <ul class="list-unstyled mb-0">
+                @foreach($beschikbaarheidPerDag ?? [] as $dagNummer => $dag)
+                    <li class="mb-1">
+                        <strong>{{ MedewerkerBeschikbaarheidService::DAG_NAMEN[$dagNummer] ?? $dagNummer }}:</strong>
+                        @if($dag['actief'] ?? false)
+                            {{ $dag['start'] }} – {{ $dag['eind'] }}
+                        @else
+                            <span class="text-muted">Gesloten</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 

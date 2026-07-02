@@ -34,11 +34,19 @@ try {
 
     echo "Database `{$database}` aangemaakt en geïmporteerd.\n";
 
-    $spScript = __DIR__ . '/import_medewerker_sp.php';
-    if (file_exists($spScript)) {
+    $spScripts = [
+        __DIR__ . '/import_medewerker_sp.php',
+        __DIR__ . '/import_klant_sp.php',
+    ];
+
+    foreach ($spScripts as $spScript) {
+        if (! file_exists($spScript)) {
+            continue;
+        }
+
         passthru(PHP_BINARY . ' ' . escapeshellarg($spScript), $spExitCode);
         if ($spExitCode !== 0) {
-            fwrite(STDERR, "Waarschuwing: stored procedures konden niet worden geïmporteerd.\n");
+            fwrite(STDERR, "Waarschuwing: stored procedures konden niet worden geïmporteerd ({$spScript}).\n");
         }
     }
 

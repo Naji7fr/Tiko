@@ -226,4 +226,67 @@ class MedewerkerOverzichtTest extends TestCase
         $overview = $this->actingAs($this->admin)->get(route('medewerkers.index'));
         $overview->assertSee('Actieve Medewerker');
     }
+
+    public function test_medewerker_account_heeft_geen_toegang_tot_medewerkerbeheer(): void
+    {
+        $medewerkerAccount = User::factory()->create([
+            'role' => 'medewerker',
+            'status' => 'Actief',
+        ]);
+
+        $response = $this->actingAs($medewerkerAccount)->get(route('medewerkers.index'));
+
+        $response->assertRedirect(route('home'));
+    }
+
+    public function test_medewerker_beschikbaarheid_wordt_opgeslagen_bij_toevoegen(): void
+    {
+        $specialisatie = SpecialisatieModel::where('naam', 'Fade')->first();
+
+        $response = $this->actingAs($this->admin)->post(route('medewerkers.store'), [
+            'voornaam' => 'Rooster',
+            'achternaam' => 'Tester',
+            'email' => 'rooster@example.com',
+            'specialisatie_id' => $specialisatie->id,
+            'is_actief' => '1',
+            'beschikbaarheid' => [
+                1 => ['actief' => '1', 'start' => '10:00', 'eind' => '16:00'],
+                2 => ['actief' => '0', 'start' => '09:00', 'eind' => '18:00'],
+            ],
+        ]);
+
+        $response->assertRedirect(route('medewerkers.index'));
+
+        $medewerker = MedewerkerModel::query()
+            ->whereHas('gebruiker.contactGegevens', fn ($q) => $q->where('email', 'rooster@example.com'))
+            ->firstOrFail();
+
+        $this->assertDatabaseHas('medewerker_beschikbaarheid', [
+            'medewerker_id' => $medewerker->id,
+            'dag_van_week' => 1,
+            'start_tijd' => '10:00:00',
+            'eind_tijd' => '16:00:00',
+            'is_beschikbaar' => 1,
+        ]);
+
+        $this->assertDatabaseHas('medewerker_beschikbaarheid', [
+            'medewerker_id' => $medewerker->id,
+            'dag_van_week' => 2,
+            'is_beschikbaar' => 0,
+        ]);
+    }
+
+    public function test_medewerker_overzicht_toont_beschikbaarheid(): void
+    {
+        $medewerker = MedewerkerModel::factory()->actief()->create([
+            'naam' => 'Beschikbaar Kapper',
+            'email' => 'beschikbaar@example.com',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('medewerkers.index'));
+
+        $response->assertOk();
+        $response->assertSee('Beschikbaar Kapper');
+        $response->assertSee('Ma–Vr 09:00–18:00');
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\Medewerker\ContactGegevensModel;
 use App\Models\Medewerker\GebruikerModel;
 use App\Models\Medewerker\MedewerkerModel;
 use App\Models\Medewerker\TechnischeLogModel;
+use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,10 @@ use Illuminate\Support\Facades\DB;
 class MedewerkerService
 {
     private ?bool $storedProceduresBeschikbaar = null;
+
+    public function __construct(
+        private readonly MedewerkerBeschikbaarheidService $beschikbaarheidService
+    ) {}
 
     /**
      * Haalt medewerkeroverzicht op (stored procedure of JOIN-fallback).
@@ -52,11 +57,16 @@ class MedewerkerService
     public function voegMedewerkerToe(array $gevalideerdeData): MedewerkerModel
     {
         try {
-            if ($this->gebruiktStoredProcedures()) {
-                return $this->voegToeViaStoredProcedure($gevalideerdeData);
-            }
+            $medewerker = $this->gebruiktStoredProcedures()
+                ? $this->voegToeViaStoredProcedure($gevalideerdeData)
+                : $this->voegToeViaTransactie($gevalideerdeData);
 
-            return $this->voegToeViaTransactie($gevalideerdeData);
+            $this->beschikbaarheidService->sync(
+                $medewerker->id,
+                $gevalideerdeData['beschikbaarheid'] ?? null
+            );
+
+            return $medewerker;
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer(
                 'error',
@@ -79,11 +89,16 @@ class MedewerkerService
         try {
             if ($this->gebruiktStoredProcedures()) {
                 $this->wijzigViaStoredProcedure($medewerker->id, $gevalideerdeData);
-
-                return;
+            } else {
+                $this->wijzigViaTransactie($medewerker, $gevalideerdeData);
             }
 
-            $this->wijzigViaTransactie($medewerker, $gevalideerdeData);
+            if (array_key_exists('beschikbaarheid', $gevalideerdeData)) {
+                $this->beschikbaarheidService->sync(
+                    $medewerker->id,
+                    $gevalideerdeData['beschikbaarheid']
+                );
+            }
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer(
                 'error',

@@ -65,6 +65,19 @@ CREATE TABLE medewerkers (
     FOREIGN KEY (gebruiker_id) REFERENCES gebruikers (id) ON DELETE CASCADE
 );
 
+CREATE TABLE medewerker_beschikbaarheid (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    medewerker_id   INTEGER         NOT NULL,
+    dag_van_week    INTEGER         NOT NULL,
+    start_tijd      TIME            NOT NULL,
+    eind_tijd       TIME            NOT NULL,
+    is_beschikbaar  INTEGER         NOT NULL DEFAULT 1,
+    created_at      DATETIME        NULL,
+    updated_at      DATETIME        NULL,
+    UNIQUE (medewerker_id, dag_van_week),
+    FOREIGN KEY (medewerker_id) REFERENCES medewerkers (id) ON DELETE CASCADE
+);
+
 CREATE TABLE klanten (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id       INTEGER         NULL UNIQUE,

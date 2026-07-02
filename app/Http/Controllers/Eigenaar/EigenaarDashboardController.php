@@ -66,9 +66,7 @@ class EigenaarDashboardController extends Controller
     public function modulePlaceholder(string $module): View
     {
         $titel = match ($module) {
-            'klanten' => 'Klanten',
             'behandelingen' => 'Behandelingen',
-            'producten' => 'Producten',
             'bestellingen' => 'Bestellingen',
             default => 'Module',
         };
@@ -91,9 +89,9 @@ class EigenaarDashboardController extends Controller
             ],
             [
                 'slug' => 'medewerkers',
-                'titel' => 'Medewerkers',
+                'titel' => 'Medewerkers beheren',
                 'icoon' => 'fa-users',
-                'beschrijving' => 'Personeel, specialisaties en status',
+                'beschrijving' => 'Personeel toevoegen, wijzigen en verwijderen',
                 'route' => route('medewerkers.index'),
                 'actief' => true,
             ],
@@ -102,8 +100,8 @@ class EigenaarDashboardController extends Controller
                 'titel' => 'Klanten',
                 'icoon' => 'fa-user-friends',
                 'beschrijving' => 'Klantaccounts en contactgegevens',
-                'route' => route('eigenaar.module', 'klanten'),
-                'actief' => false,
+                'route' => route('eigenaar.klanten.index'),
+                'actief' => true,
             ],
             [
                 'slug' => 'afspraken',
@@ -126,8 +124,8 @@ class EigenaarDashboardController extends Controller
                 'titel' => 'Producten',
                 'icoon' => 'fa-box',
                 'beschrijving' => 'Voorraad, categorieën en leveranciers',
-                'route' => route('eigenaar.module', 'producten'),
-                'actief' => false,
+                'route' => route('producten.index'),
+                'actief' => true,
             ],
             [
                 'slug' => 'bestellingen',

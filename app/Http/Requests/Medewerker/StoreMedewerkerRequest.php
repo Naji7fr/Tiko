@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Medewerker;
 
+use App\Http\Requests\Medewerker\Concerns\ValideertMedewerkerBeschikbaarheid;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * medewerker.request — Server-side validatie bij aanmaken medewerker.
@@ -12,17 +14,19 @@ use Illuminate\Validation\Rule;
  */
 class StoreMedewerkerRequest extends FormRequest
 {
-    /** Alleen admin/medewerker mogen medewerkers aanmaken (route-middleware). */
+    use ValideertMedewerkerBeschikbaarheid;
+
+    /** Alleen eigenaar mag medewerkers aanmaken. */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->isEigenaar() ?? false;
     }
 
     /** Validatieregels voor nieuwe medewerker (whitelist velden). */
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'voornaam' => 'required|string|max:50',
             'tussenvoegsel' => 'nullable|string|max:20',
             'achternaam' => 'required|string|max:50',
@@ -34,7 +38,14 @@ class StoreMedewerkerRequest extends FormRequest
             ],
             'specialisatie_id' => 'required|exists:specialisaties,id',
             'is_actief' => 'required|in:1,0',
-        ];
+        ], $this->beschikbaarheidRegels());
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $this->valideerBeschikbaarheid($validator);
+        });
     }
 
     /** @return array<string, string> */

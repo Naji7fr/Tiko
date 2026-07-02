@@ -259,9 +259,12 @@
                         <a href="{{ route('eigenaar.dashboard') }}" class="btn btn-outline-gold btn-lg">
                             <i class="fas fa-crown me-2"></i>Eigenaar Dashboard
                         </a>
-                    @elseif(Auth::user()->isMedewerker())
                         <a href="{{ route('medewerkers.index') }}" class="btn btn-outline-gold btn-lg">
-                            <i class="fas fa-users me-2"></i>Medewerkerbeheer
+                            <i class="fas fa-users me-2"></i>Medewerkers beheren
+                        </a>
+                    @elseif(Auth::user()->isMedewerker())
+                        <a href="{{ route('producten.index') }}" class="btn btn-outline-gold btn-lg">
+                            <i class="fas fa-box me-2"></i>Producten beheren
                         </a>
                     @elseif(Auth::user()->isKlant())
                         <a href="{{ route('klant.dashboard') }}" class="btn btn-outline-gold btn-lg">

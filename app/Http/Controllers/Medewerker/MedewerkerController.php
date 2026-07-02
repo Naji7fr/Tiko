@@ -8,6 +8,7 @@ use App\Http\Requests\Medewerker\UpdateMedewerkerRequest;
 use App\Models\Medewerker\MedewerkerModel;
 use App\Models\Medewerker\SpecialisatieModel;
 use App\Models\Medewerker\TechnischeLogModel;
+use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
 use App\Services\Medewerker\MedewerkerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -24,7 +25,8 @@ use Illuminate\View\View;
 class MedewerkerController extends Controller
 {
     public function __construct(
-        private readonly MedewerkerService $medewerkerService
+        private readonly MedewerkerService $medewerkerService,
+        private readonly MedewerkerBeschikbaarheidService $beschikbaarheidService
     ) {}
 
     /**
@@ -35,8 +37,14 @@ class MedewerkerController extends Controller
         try {
             $medewerkers = $this->medewerkerService->haalMedewerkersOp();
 
+            $medewerkerIds = collect($medewerkers)->map(
+                fn ($m) => $m->id ?? $m->medewerker_id ?? null
+            )->filter()->unique()->values()->all();
+
+            $beschikbaarheidSamenvattingen = $this->beschikbaarheidService->haalSamenvattingen($medewerkerIds);
+
             if ($medewerkers instanceof \Illuminate\Support\Collection) {
-                return view('medewerker.index.view', compact('medewerkers'));
+                return view('medewerker.index.view', compact('medewerkers', 'beschikbaarheidSamenvattingen'));
             }
 
             // Stored procedure resultaat omzetten naar collectie voor de view
@@ -51,7 +59,7 @@ class MedewerkerController extends Controller
                 return $rij;
             });
 
-            return view('medewerker.index.view', compact('medewerkers'));
+            return view('medewerker.index.view', compact('medewerkers', 'beschikbaarheidSamenvattingen'));
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'medewerker', 'index', $exception->getMessage());
 
@@ -64,8 +72,9 @@ class MedewerkerController extends Controller
     public function create(): View
     {
         $specialisaties = SpecialisatieModel::orderBy('naam')->get();
+        $beschikbaarheidPerDag = $this->beschikbaarheidService->voorFormulier();
 
-        return view('medewerker.create.view', compact('specialisaties'));
+        return view('medewerker.create.view', compact('specialisaties', 'beschikbaarheidPerDag'));
     }
 
     /** POST /medewerkers — Medewerker opslaan (server + client validatie). */
@@ -92,10 +101,22 @@ class MedewerkerController extends Controller
     {
         try {
             $medewerkerDetail = MedewerkerModel::haalDetailMetJoins($medewerker->id)
-                ?? $medewerker->load(['gebruiker.contactGegevens', 'specialisatie']);
+                ?? $medewerker->load($this->medewerkerRelaties());
+
+            if ($this->beschikbaarheidService->tabelBestaat()) {
+                $medewerkerDetail->loadMissing('beschikbaarheid');
+            }
+
+            $beschikbaarheidRegels = $medewerkerDetail->relationLoaded('beschikbaarheid')
+                ? ($medewerkerDetail->beschikbaarheid ?? collect())
+                : collect();
+
+            $beschikbaarheidSamenvatting = $this->beschikbaarheidService->samenvatting($beschikbaarheidRegels);
 
             return view('medewerker.show.view', [
                 'medewerker' => $medewerkerDetail,
+                'beschikbaarheidSamenvatting' => $beschikbaarheidSamenvatting,
+                'beschikbaarheidPerDag' => $this->beschikbaarheidService->voorFormulier($medewerkerDetail),
             ]);
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'medewerker', 'show', $exception->getMessage());
@@ -109,10 +130,11 @@ class MedewerkerController extends Controller
     /** GET /medewerkers/{id}/edit — Wijzigformulier. */
     public function edit(MedewerkerModel $medewerker): View
     {
-        $medewerker->load(['gebruiker.contactGegevens', 'specialisatie']);
+        $medewerker->load($this->medewerkerRelaties());
         $specialisaties = SpecialisatieModel::orderBy('naam')->get();
+        $beschikbaarheidPerDag = $this->beschikbaarheidService->voorFormulier($medewerker);
 
-        return view('medewerker.edit.view', compact('medewerker', 'specialisaties'));
+        return view('medewerker.edit.view', compact('medewerker', 'specialisaties', 'beschikbaarheidPerDag'));
     }
 
     /** PUT /medewerkers/{id} — Medewerker bijwerken. */
@@ -158,5 +180,17 @@ class MedewerkerController extends Controller
                 ->route('medewerkers.index')
                 ->with('error', 'Medewerker kon niet worden verwijderd.');
         }
+    }
+
+    /** @return list<string> */
+    private function medewerkerRelaties(): array
+    {
+        $relaties = ['gebruiker.contactGegevens', 'specialisatie'];
+
+        if ($this->beschikbaarheidService->tabelBestaat()) {
+            $relaties[] = 'beschikbaarheid';
+        }
+
+        return $relaties;
     }
 }

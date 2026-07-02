@@ -9,6 +9,7 @@ use App\Models\Behandeling;
 use App\Models\Klant;
 use App\Models\Medewerker\MedewerkerModel;
 use App\Models\Medewerker\TechnischeLogModel;
+use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +17,11 @@ use Illuminate\View\View;
 
 class AfspraakController extends Controller
 {
-    /** GET /afspraken — Overzicht voor medewerker en klant. */
+    public function __construct(
+        private readonly MedewerkerBeschikbaarheidService $beschikbaarheidService
+    ) {}
+
+    /** GET /afspraken — Volledige planning voor medewerker en eigenaar. */
     public function index(): View|RedirectResponse
     {
         abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
@@ -24,7 +29,6 @@ class AfspraakController extends Controller
         try {
             $afspraken = Afspraak::query()
                 ->with(['klant.gebruiker.contactGegevens', 'medewerker.gebruiker.contactGegevens', 'behandeling'])
-                ->whereDate('afspraak_datum', today())
                 ->orderBy('afspraak_datum')
                 ->orderBy('afspraak_tijd')
                 ->get();
@@ -41,21 +45,31 @@ class AfspraakController extends Controller
     public function create(): View
     {
         $behandelingen = Behandeling::orderBy('naam')->get();
-        $medewerkers = MedewerkerModel::query()->with(['gebruiker.contactGegevens', 'specialisatie'])->get();
+        $medewerkers = MedewerkerModel::query()
+            ->where('is_actief', true)
+            ->with(['gebruiker.contactGegevens', 'specialisatie'])
+            ->get();
+        $klanten = $this->haalKlantenVoorFormulier();
+        $eigenKlant = auth()->user()?->isKlant()
+            ? auth()->user()->klant()->with('gebruiker.contactGegevens')->first()
+            : null;
 
-        return view('afspraken.create', compact('behandelingen', 'medewerkers'));
+        return view('afspraken.create', compact('behandelingen', 'medewerkers', 'klanten', 'eigenKlant'));
     }
 
     /** POST /afspraken — Nieuwe afspraak opslaan. */
     public function store(StoreAfspraakRequest $request): RedirectResponse
     {
         try {
-            $klant = $this->resolveKlant($request->user());
+            $klant = $this->resolveKlant(
+                $request->user(),
+                $request->input('klant_id') ? (int) $request->input('klant_id') : null
+            );
 
             $this->controleerBeschikbaarheid($request->medewerker_id, $request->afspraak_datum, $request->afspraak_tijd);
 
-            DB::transaction(function () use ($request, $klant): void {
-                Afspraak::create([
+            $afspraak = DB::transaction(function () use ($request, $klant): Afspraak {
+                return Afspraak::create([
                     'klant_id' => $klant->id,
                     'medewerker_id' => $request->medewerker_id,
                     'behandeling_id' => $request->behandeling_id,
@@ -65,11 +79,14 @@ class AfspraakController extends Controller
                 ]);
             });
 
+            $afspraak->load(['behandeling', 'medewerker.gebruiker']);
+            $bevestiging = $this->bouwBevestigingsMelding($afspraak);
+
             if ($request->user()?->isKlant()) {
-                return redirect()->route('afspraken.create')->with('success', 'Afspraak succesvol ingepland.');
+                return redirect()->route('afspraken.create')->with('success', $bevestiging);
             }
 
-            return redirect()->route('afspraken.index')->with('success', 'Afspraak succesvol ingepland.');
+            return redirect()->route('afspraken.index')->with('success', $bevestiging);
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'afspraak', 'store', $exception->getMessage());
 
@@ -87,9 +104,13 @@ class AfspraakController extends Controller
         abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
 
         $behandelingen = Behandeling::orderBy('naam')->get();
-        $medewerkers = MedewerkerModel::query()->with(['gebruiker.contactGegevens', 'specialisatie'])->get();
+        $medewerkers = MedewerkerModel::query()
+            ->where('is_actief', true)
+            ->with(['gebruiker.contactGegevens', 'specialisatie'])
+            ->get();
+        $klanten = $this->haalKlantenVoorFormulier();
 
-        return view('afspraken.edit', compact('afspraak', 'behandelingen', 'medewerkers'));
+        return view('afspraken.edit', compact('afspraak', 'behandelingen', 'medewerkers', 'klanten'));
     }
 
     /** PUT /afspraken/{afspraak} — Afspraak bijwerken. */
@@ -99,6 +120,7 @@ class AfspraakController extends Controller
             $this->controleerBeschikbaarheid($request->medewerker_id, $request->afspraak_datum, $request->afspraak_tijd, $afspraak->id);
 
             $afspraak->update([
+                'klant_id' => $request->klant_id,
                 'medewerker_id' => $request->medewerker_id,
                 'behandeling_id' => $request->behandeling_id,
                 'afspraak_datum' => $request->afspraak_datum,
@@ -124,7 +146,15 @@ class AfspraakController extends Controller
         abort_unless(auth()->user()?->isAdmin() || auth()->user()?->isMedewerker(), 403);
 
         try {
-            if ($afspraak->afspraak_datum < now()->toDateString()) {
+            $afspraak->load('behandeling');
+
+            if ($afspraak->isLopend()) {
+                throw ValidationException::withMessages([
+                    'afspraak' => 'Een lopende afspraak kan niet meer worden geannuleerd',
+                ]);
+            }
+
+            if ($afspraak->isVerstreken()) {
                 throw ValidationException::withMessages([
                     'afspraak' => 'Een verstreken afspraak kan niet worden verwijderd',
                 ]);
@@ -132,7 +162,7 @@ class AfspraakController extends Controller
 
             $afspraak->delete();
 
-            return redirect()->route('afspraken.index')->with('success', 'Afspraak succesvol verwijderd.');
+            return redirect()->route('afspraken.index')->with('success', 'Afspraak succesvol geannuleerd.');
         } catch (\Throwable $exception) {
             TechnischeLogModel::registreer('error', 'afspraak', 'destroy', $exception->getMessage());
 
@@ -144,13 +174,23 @@ class AfspraakController extends Controller
         }
     }
 
-    private function resolveKlant($user): Klant
+    private function resolveKlant($user, ?int $klantId = null): Klant
     {
-        if ($user->isAdmin() || $user->isMedewerker()) {
-            return Klant::query()->firstOrFail();
+        if ($user->isKlant()) {
+            return $user->klant()->firstOrFail();
         }
 
-        return $user->klant()->firstOrFail();
+        return Klant::query()->findOrFail($klantId);
+    }
+
+    /** @return \Illuminate\Support\Collection<int, Klant> */
+    private function haalKlantenVoorFormulier()
+    {
+        return Klant::query()
+            ->with('gebruiker.contactGegevens')
+            ->get()
+            ->sortBy(fn (Klant $klant): string => $klant->gebruiker?->volledig_naam ?? '')
+            ->values();
     }
 
     /**
@@ -159,12 +199,11 @@ class AfspraakController extends Controller
      */
     private function controleerBeschikbaarheid(int $medewerkerId, string $datum, string $tijd, ?int $ignoreAfspraakId = null): void
     {
-        $medewerker = MedewerkerModel::findOrFail($medewerkerId);
-        $start = \Carbon\Carbon::parse("{$datum} {$tijd}");
+        MedewerkerModel::findOrFail($medewerkerId);
 
-        if ($start->hour < 9 || $start->hour >= 20) {
+        if (! $this->beschikbaarheidService->isBeschikbaarOp($medewerkerId, $datum, $tijd)) {
             throw ValidationException::withMessages([
-                'afspraak_tijd' => 'De gekozen tijd valt buiten de werkuren van Tiko.',
+                'afspraak_tijd' => 'De gekozen tijd valt buiten de beschikbaarheid van deze medewerker.',
             ]);
         }
 
@@ -182,5 +221,15 @@ class AfspraakController extends Controller
                 'afspraak_tijd' => 'Dit tijdstip is niet meer beschikbaar, kies een andere tijd',
             ]);
         }
+    }
+
+    private function bouwBevestigingsMelding(Afspraak $afspraak): string
+    {
+        $datum = \Carbon\Carbon::parse($afspraak->afspraak_datum)->format('d-m-Y');
+        $tijd = substr((string) $afspraak->afspraak_tijd, 0, 5);
+        $behandeling = $afspraak->behandeling?->naam ?? 'Behandeling';
+        $specialist = $afspraak->medewerker?->gebruiker?->volledig_naam ?? 'Specialist';
+
+        return "Afspraak ingepland: {$behandeling} bij {$specialist} op {$datum} om {$tijd}.";
     }
 }

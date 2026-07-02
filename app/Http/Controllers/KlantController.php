@@ -6,15 +6,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
- * Controller voor het klant-portaal.
+ * klant.controller — MVC Controller voor het klant-portaal.
  *
- * Klanten hebben een beperkte omgeving — geen toegang tot medewerkerbeheer.
- * Later uitbreidbaar met afspraken, profiel, etc.
+ * Klanten hebben een beperkte omgeving (geen medewerker- of eigenaarbeheer).
+ * Toont dashboard met profielgegevens; afspraken volgen later.
+ *
+ * Security: auth + role:klant middleware op routes.
  */
 class KlantController extends Controller
 {
     /**
-     * Toon het klant-dashboard.
+     * GET /klant/dashboard — Klant-dashboard met profiel uit klanten → gebruikers.
      */
     public function dashboard(): View
     {

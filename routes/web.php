@@ -6,8 +6,9 @@
  * Publiek:     home, login, register
  * Klant:       /klant/*        (role: klant)
  * Eigenaar:    /eigenaar/*     (role: admin)
- * Medewerker:  /medewerkers/*  (role: admin, medewerker)
- * Afspraken:   /afspraken/*    (auth — klant: aanmaken, medewerker/admin: beheer)
+ * Medewerkerbeheer: /medewerkers/*  (role: admin — alleen eigenaar)
+ * Producten:       /product-*       (role: admin, medewerker)
+ * Afspraken:       /afspraken/*     (auth)
  */
 
 use App\Http\Controllers\AfspraakController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Eigenaar\EigenaarDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Eigenaar\AccountController as EigenaarAccountController;
+use App\Http\Controllers\Eigenaar\KlantenController;
 use App\Http\Controllers\Klant\AccountController as KlantAccountController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KlantController;
@@ -55,13 +57,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
     Route::get('/dashboard', [EigenaarDashboardController::class, 'index'])->name('dashboard');
     Route::get('/rapportages', [EigenaarDashboardController::class, 'rapportages'])->name('rapportages');
     Route::resource('accounts', EigenaarAccountController::class)->except(['show']);
-    // Placeholder-modules (klanten, …) — nog in ontwikkeling
+    Route::get('/klanten', [KlantenController::class, 'index'])->name('klanten.index');
+    // Placeholder-modules (behandelingen, …) — nog in ontwikkeling
     Route::get('/{module}', [EigenaarDashboardController::class, 'modulePlaceholder'])
-        ->where('module', 'klanten|behandelingen|producten|bestellingen')
+        ->where('module', 'behandelingen|bestellingen')
         ->name('module');
 });
 
-// --- Medewerkerbeheer (admin + medewerker) ---
+// --- Medewerkerbeheer (alleen eigenaar / admin) ---
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('medewerkers', MedewerkerController::class);
+});
+
+// --- Productbeheer (eigenaar + medewerker-account) ---
 Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
     Route::get('/product-overzicht', [ProductController::class, 'index'])->name('producten.index');
     Route::get('/product-toevoegen', [ProductController::class, 'create'])->name('producten.create');
@@ -69,5 +77,4 @@ Route::middleware(['auth', 'role:admin,medewerker'])->group(function () {
     Route::get('/product-wijzigen/{id}', [ProductController::class, 'edit'])->name('producten.edit');
     Route::put('/product-wijzigen/{id}', [ProductController::class, 'update'])->name('producten.update');
     Route::delete('/producten/{id}', [ProductController::class, 'destroy'])->name('producten.destroy');
-    Route::resource('medewerkers', MedewerkerController::class);
 });

@@ -3,6 +3,7 @@
     $medewerkerId = $medewerker->id ?? $medewerker->medewerker_id;
     $statusLabel = $medewerker->status ?? ($medewerker->is_actief ? 'Actief' : 'Inactief');
     $isActief = $statusLabel === 'Actief';
+    $beschikbaarheid = $beschikbaarheidSamenvattingen[$medewerkerId] ?? '—';
 @endphp
 <div class="medewerker-mobile-card card mb-3">
     <div class="card-body">
@@ -32,6 +33,10 @@
             <li>
                 <i class="fas fa-scissors text-muted me-2"></i>
                 {{ $medewerker->specialisatie?->naam ?? $medewerker->specialisatie_naam ?? '—' }}
+            </li>
+            <li>
+                <i class="fas fa-calendar-week text-muted me-2"></i>
+                {{ $beschikbaarheid }}
             </li>
         </ul>
 

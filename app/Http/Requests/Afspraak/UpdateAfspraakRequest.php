@@ -14,6 +14,7 @@ class UpdateAfspraakRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'klant_id' => ['required', 'exists:klanten,id'],
             'behandeling_id' => ['required', 'exists:behandelingen,id'],
             'medewerker_id' => ['required', 'exists:medewerkers,id'],
             'afspraak_datum' => ['required', 'date', 'after_or_equal:today'],

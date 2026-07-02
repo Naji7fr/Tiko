@@ -4,23 +4,35 @@ namespace App\Http\Controllers\Klant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Klant;
+use App\Services\Klant\KlantAccountService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-use Throwable;
 use Illuminate\Validation\Rule;
+use Throwable;
 
+/**
+ * klant.account.controller — Zelfbeheer van klantaccount (details, wijzigen, verwijderen).
+ *
+ * Architectuur:
+ *   View  ← Controller ← Eloquent (klanten → gebruikers → contact_gegevens / adressen)
+ *
+ * Op MySQL kunnen sp_klant_wijzigen / sp_klant_verwijderen worden gebruikt;
+ * huidige implementatie werkt via Eloquent-transacties (SQLite-tests).
+ *
+ * Security: auth middleware; alleen ingelogde klant mag eigen gegevens beheren.
+ */
 class AccountController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly KlantAccountService $klantAccountService
+    ) {
         $this->middleware('auth');
     }
 
+    /** GET /account/details — Toon profiel van ingelogde klant. */
     public function details(Request $request): View
     {
         $user = $request->user();
@@ -32,6 +44,7 @@ class AccountController extends Controller
         ]);
     }
 
+    /** GET /account/details/edit — Formulier om profiel te wijzigen. */
     public function edit(Request $request): View
     {
         $user = $request->user();
@@ -57,6 +70,7 @@ class AccountController extends Controller
         ]);
     }
 
+    /** PUT /account/details — Sla profielwijzigingen op (users + gebruikers + contact + adres). */
     public function update(Request $request): RedirectResponse
     {
         try {
@@ -138,49 +152,25 @@ class AccountController extends Controller
         }
     }
 
+    /** GET /account/settings — Redirect naar accountdetails. */
     public function settings(Request $request): RedirectResponse
     {
         return redirect()->route('account.details');
     }
 
+    /**
+     * DELETE /account/details — Verwijder klantaccount inclusief profielgegevens.
+     *
+     * Verwijdert users + gekoppelde klant/gebruiker/contact/adres in één transactie.
+     */
     public function destroy(Request $request): RedirectResponse
     {
         abort_unless($request->user()?->isKlant(), 403);
 
         try {
             $user = $request->user();
-            $klantQuery = Klant::query()->where('user_id', $user->id);
 
-            if (Schema::hasTable('adressen')) {
-                $klantQuery->with(['gebruiker.contactGegevens', 'gebruiker.adres']);
-            } else {
-                $klantQuery->with('gebruiker.contactGegevens');
-            }
-
-            $klant = $klantQuery->first();
-            $gebruikerId = $klant?->gebruiker_id;
-            $contactGegevensId = $klant?->gebruiker?->contact_gegevens_id;
-            $adresId = Schema::hasTable('adressen') ? $klant?->gebruiker?->adres_id : null;
-
-            DB::transaction(function () use ($user, $klant): void {
-                $gebruikerId = $klant?->gebruiker_id;
-                $contactGegevensId = $klant?->gebruiker?->contact_gegevens_id;
-                $adresId = Schema::hasTable('adressen') ? $klant?->gebruiker?->adres_id : null;
-
-                if ($adresId) {
-                    DB::table('adressen')->where('id', $adresId)->delete();
-                }
-
-                if ($gebruikerId) {
-                    DB::table('gebruikers')->where('id', $gebruikerId)->delete();
-                }
-
-                if ($contactGegevensId) {
-                    DB::table('contact_gegevens')->where('id', $contactGegevensId)->delete();
-                }
-
-                DB::table('users')->where('id', $user->id)->delete();
-            });
+            $this->klantAccountService->verwijderProfiel($user);
 
             Auth::logout();
             $request->session()->invalidate();

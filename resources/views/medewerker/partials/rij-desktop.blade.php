@@ -3,6 +3,7 @@
     $medewerkerId = $medewerker->id ?? $medewerker->medewerker_id;
     $statusLabel = $medewerker->status ?? ($medewerker->is_actief ? 'Actief' : 'Inactief');
     $isActief = $statusLabel === 'Actief';
+    $beschikbaarheid = $beschikbaarheidSamenvattingen[$medewerkerId] ?? '—';
 @endphp
 <tr>
     <td>
@@ -40,6 +41,9 @@
         <span class="badge bg-primary">
             <i class="fas fa-scissors me-1"></i>{{ $medewerker->specialisatie?->naam ?? $medewerker->specialisatie_naam ?? '—' }}
         </span>
+    </td>
+    <td>
+        <small class="text-muted">{{ $beschikbaarheid }}</small>
     </td>
     <td class="text-end">
         <div class="btn-group" role="group">

@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * Model: User (login-account voor beheerders én klanten).
  *
- * - admin / medewerker → medewerkerbeheer
+ * - admin / medewerker → productbeheer
  * - klant           → klant-portaal (dashboard, later afspraken)
  */
 class User extends Authenticatable

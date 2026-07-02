@@ -14,7 +14,7 @@ use Illuminate\View\View;
  *
  * Redirect na login:
  *   admin   → eigenaar-dashboard
- *   medewerker → medewerkerbeheer
+ *   medewerker → productbeheer
  *   klant   → klant-dashboard
  */
 class LoginController extends Controller
@@ -58,13 +58,13 @@ class LoginController extends Controller
             ]);
         }
 
-        // Eigenaar → dashboard, medewerker → medewerkerbeheer, klant → klant-portaal
+        // Eigenaar → dashboard, medewerker → producten, klant → klant-portaal
         if ($user->isEigenaar()) {
             return redirect()->intended(route('eigenaar.dashboard'));
         }
 
-        if ($user->isAdmin()) {
-            return redirect()->intended(route('medewerkers.index'));
+        if ($user->isMedewerker()) {
+            return redirect()->intended(route('producten.index'));
         }
 
         if ($user->isKlant()) {
