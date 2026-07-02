@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Bootstrap — Laravel applicatieconfiguratie.
+ *
+ * Registreert routes, middleware-aliassen en exception handling.
+ */
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Custom middleware: role:admin, role:klant, etc.
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);

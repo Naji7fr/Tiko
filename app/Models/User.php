@@ -2,21 +2,23 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Model: User (login-account voor beheerders én klanten).
+ *
+ * - admin / medewerker → medewerkerbeheer
+ * - klant           → klant-portaal (dashboard, later afspraken)
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> Mass assignment: login- en profielvelden */
     protected $fillable = [
         'name',
         'voornaam',
@@ -27,21 +29,13 @@ class User extends Authenticatable
         'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     protected function casts(): array
     {
         return [
@@ -50,24 +44,33 @@ class User extends Authenticatable
         ];
     }
 
-    public static function roleLabel(string $role): string
-    {
-        return [
-            'admin'                 => 'Admin',
-            'manager'               => 'Manager',
-            'financieel_medewerker' => 'Financieel Medewerker',
-            'reisadviseur'          => 'Reisadviseur',
-            'klant'                 => 'Klant',
-        ][$role] ?? ucfirst($role);
-    }
-
+    /** Controleer of de gebruiker beheerrechten heeft (admin of medewerker). */
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['admin', 'manager']);
+        return in_array($this->role, ['admin', 'medewerker'], true);
     }
 
+    /** Controleer of de gebruiker de eigenaar is (volledige toegang). */
+    public function isEigenaar(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /** Controleer of de gebruiker een medewerker-account is (geen eigenaar). */
+    public function isMedewerker(): bool
+    {
+        return $this->role === 'medewerker';
+    }
+
+    /** Controleer of de gebruiker een klant is. */
     public function isKlant(): bool
     {
         return $this->role === 'klant';
+    }
+
+    /** Gekoppeld klantprofiel (alleen voor role=klant). */
+    public function klant(): HasOne
+    {
+        return $this->hasOne(Klant::class);
     }
 }
