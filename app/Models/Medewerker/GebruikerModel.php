@@ -3,6 +3,7 @@
 namespace App\Models\Medewerker;
 
 use App\Models\Klant;
+use App\Models\Klant\AdresModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,6 +46,12 @@ class GebruikerModel extends Model
     public function contactGegevens(): BelongsTo
     {
         return $this->belongsTo(ContactGegevensModel::class, 'contact_gegevens_id');
+    }
+
+    /** Relatie: adres van deze gebruiker. */
+    public function adres(): BelongsTo
+    {
+        return $this->belongsTo(AdresModel::class, 'adres_id');
     }
 
     /** Relatie: medewerkerprofiel (indien van toepassing). */

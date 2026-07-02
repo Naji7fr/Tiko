@@ -9,10 +9,11 @@
  * Medewerker:  /medewerkers/*  (role: admin, medewerker)
  */
 
-use App\Http\Controllers\Eigenaar\AccountController;
 use App\Http\Controllers\Eigenaar\EigenaarDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Eigenaar\AccountController as EigenaarAccountController;
+use App\Http\Controllers\Klant\AccountController as KlantAccountController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KlantController;
 use App\Http\Controllers\Medewerker\MedewerkerController;
@@ -29,7 +30,13 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout.get');
 
-// --- Klant-portaal ---
+Route::middleware('auth')->group(function () {
+    Route::get('/account/details', [KlantAccountController::class, 'details'])->name('account.details');
+    Route::get('/account/details/edit', [KlantAccountController::class, 'edit'])->name('account.details.edit');
+    Route::put('/account/details', [KlantAccountController::class, 'update'])->name('account.details.update');
+
+    Route::get('/account/settings', [KlantAccountController::class, 'settings'])->name('account.settings');
+});
 Route::middleware(['auth', 'role:klant'])->prefix('klant')->name('klant.')->group(function () {
     Route::get('/dashboard', [KlantController::class, 'dashboard'])->name('dashboard');
 });
@@ -38,7 +45,7 @@ Route::middleware(['auth', 'role:klant'])->prefix('klant')->name('klant.')->grou
 Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')->group(function () {
     Route::get('/dashboard', [EigenaarDashboardController::class, 'index'])->name('dashboard');
     Route::get('/rapportages', [EigenaarDashboardController::class, 'rapportages'])->name('rapportages');
-    Route::resource('accounts', AccountController::class)->except(['show']);
+    Route::resource('accounts', EigenaarAccountController::class)->except(['show']);
     // Placeholder-modules (klanten, afspraken, …) — nog in ontwikkeling
     Route::get('/{module}', [EigenaarDashboardController::class, 'modulePlaceholder'])
         ->where('module', 'klanten|afspraken|behandelingen|producten|bestellingen')
