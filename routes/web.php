@@ -9,6 +9,7 @@
  * Medewerker:  /medewerkers/*  (role: admin, medewerker)
  */
 
+use App\Http\Controllers\AfspraakController;
 use App\Http\Controllers\Eigenaar\AccountController;
 use App\Http\Controllers\Eigenaar\EigenaarDashboardController;
 use App\Http\Controllers\Auth\LoginController;
@@ -32,6 +33,13 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout.get');
 // --- Klant-portaal ---
 Route::middleware(['auth', 'role:klant'])->prefix('klant')->name('klant.')->group(function () {
     Route::get('/dashboard', [KlantController::class, 'dashboard'])->name('dashboard');
+});
+
+// --- Afspraken ---
+Route::middleware(['auth'])->group(function () {
+    Route::resource('afspraken', AfspraakController::class)->parameters([
+        'afspraken' => 'afspraak'
+    ]);
 });
 
 // --- Eigenaar-dashboard (alleen admin) ---

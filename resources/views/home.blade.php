@@ -276,6 +276,9 @@
                         <i class="fas fa-sign-in-alt me-2"></i>Inloggen
                     </a>
                 @endauth
+                <a href="{{ route('afspraken.create') }}" class="btn btn-gold btn-lg">
+                    <i class="fas fa-calendar-plus me-2"></i>Afspraak maken
+                </a>
             </div>
         </div>
     </section>
