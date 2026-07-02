@@ -13,6 +13,16 @@
 <div class="container py-4">
     @include('medewerker.partials.alerts')
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="h5 mb-0">Producten</h2>
+            <p class="text-muted small mb-0">Wijzig of bekijk producten om de voorraad actueel te houden.</p>
+        </div>
+        <a href="{{ route('producten.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Nieuw product
+        </a>
+    </div>
+
     <div class="card">
         <div class="card-body">
             @if($producten->isEmpty())
@@ -29,6 +39,7 @@
                                 <th>EAN-code</th>
                                 <th>Voorraad</th>
                                 <th>Leverancier</th>
+                                <th>Acties</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,6 +50,11 @@
                                     <td>{{ $product->ean_code }}</td>
                                     <td>{{ $product->voorraad }}</td>
                                     <td>{{ $product->leverancier_naam ?? 'Onbekend' }}</td>
+                                    <td>
+                                        <a href="{{ route('producten.edit', $product->id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit me-1"></i>Wijzigen
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

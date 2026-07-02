@@ -328,6 +328,7 @@ CREATE TABLE `producten` (
     `categorie_id`      BIGINT UNSIGNED NOT NULL,
     `leverancier_id`    BIGINT UNSIGNED NOT NULL,
     `naam`              VARCHAR(100)    NOT NULL,
+    `ean_code`          VARCHAR(13)     NOT NULL,
     `beschrijving`      VARCHAR(225)    NULL,
     `prijs`             DECIMAL(8, 2)   NOT NULL,
     `created_at`        TIMESTAMP       NULL,
@@ -561,6 +562,7 @@ CREATE VIEW `v_producten_overzicht` AS
 SELECT
     p.id                AS product_id,
     p.naam              AS product_naam,
+    p.ean_code,
     p.beschrijving,
     p.prijs,
     c.id                AS categorie_id,

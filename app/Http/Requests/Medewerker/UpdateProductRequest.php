@@ -4,7 +4,7 @@ namespace App\Http\Requests\Medewerker;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProductRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -26,12 +26,12 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'naam.required' => 'Vul alle verplichte productgegevens in',
-            'categorie_id.required' => 'Vul alle verplichte productgegevens in',
-            'ean_code.required' => 'Vul alle verplichte productgegevens in',
+            'naam.required' => 'Controleer de productgegevens',
+            'categorie_id.required' => 'Controleer de productgegevens',
+            'ean_code.required' => 'Controleer de productgegevens',
             'ean_code.regex' => 'Controleer de productgegevens',
-            'voorraad.required' => 'Vul alle verplichte productgegevens in',
-            'leverancier_id.required' => 'Vul alle verplichte productgegevens in',
+            'voorraad.required' => 'Controleer de productgegevens',
+            'leverancier_id.required' => 'Controleer de productgegevens',
             'categorie_id.exists' => 'Selecteer een geldige categorie.',
             'leverancier_id.exists' => 'Selecteer een geldige leverancier.',
             'voorraad.integer' => 'Voorraad moet een heel getal zijn.',
