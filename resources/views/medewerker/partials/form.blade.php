@@ -54,15 +54,18 @@
                        maxlength="50"
                        data-medewerker-validate="voornaam">
                 @error('voornaam')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div class="invalid-feedback d-none" data-client-error="voornaam"></div>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="tussenvoegsel" class="form-label">Tussenvoegsel</label>
                 <input type="text"
-                       class="form-control"
+                       class="form-control @error('tussenvoegsel') is-invalid @enderror"
                        id="tussenvoegsel"
                        name="tussenvoegsel"
                        value="{{ old('tussenvoegsel', $medewerker->gebruiker->tussenvoegsel ?? '') }}"
                        maxlength="20">
+                @error('tussenvoegsel')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div class="invalid-feedback d-none" data-client-error="tussenvoegsel"></div>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="achternaam" class="form-label">Achternaam <span class="text-danger">*</span></label>
@@ -75,6 +78,7 @@
                        maxlength="50"
                        data-medewerker-validate="achternaam">
                 @error('achternaam')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div class="invalid-feedback d-none" data-client-error="achternaam"></div>
             </div>
         </div>
     </div>

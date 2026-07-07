@@ -8,7 +8,7 @@
 $host = '127.0.0.1';
 $user = 'root';
 $pass = '';
-$database = 'toki';
+$database = getenv('TIKO_IMPORT_DATABASE') ?: 'toki';
 $sqlFile = __DIR__ . '/sql/klant_stored_procedures.sql';
 
 if (! file_exists($sqlFile)) {

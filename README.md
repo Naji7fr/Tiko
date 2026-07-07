@@ -56,8 +56,40 @@ database/sql/
 
 ## Database (MySQL)
 
+### Normale database (met seeddata)
+
 1. Importeer `database/sql/toki.sql`
-2. Importeer `database/sql/medewerker_stored_procedures.sql`
+2. Importeer `database/sql/medewerker_stored_procedures.sql` en `database/sql/klant_stored_procedures.sql`
+
+```bash
+php database/setup_toki.php
+```
+
+```env
+DB_USE_EMPTY=false
+DB_DATABASE=toki
+```
+
+**Admin (eigenaar):** `admin@tiko.nl` / `password`
+
+### Lege database (alleen schema, geen seeddata)
+
+Naast `toki` kun je een lege database `toki_empty` gebruiken — handig om zelf data toe te voegen zonder voorbeeldrecords.
+
+```bash
+php database/build_toki_empty_sql.php   # genereert database/sql/toki_empty.sql
+php database/setup_toki_empty.php       # maakt toki_empty aan in MySQL
+```
+
+Schakel in `.env`:
+
+```env
+DB_USE_EMPTY=true
+DB_EMPTY_DATABASE=toki_empty
+DB_EMPTY_SQL_PATH=database/sql/toki_empty.sql
+```
+
+Zet `DB_USE_EMPTY=false` om terug te schakelen naar de normale database (`DB_DATABASE`).
 
 ```env
 DB_CONNECTION=mysql
@@ -78,6 +110,8 @@ php artisan serve
 ```
 
 **Admin (eigenaar):** `admin@tiko.nl` / `password` → [Eigenaar Dashboard](http://localhost:8000/eigenaar/dashboard)
+
+*(Alleen beschikbaar wanneer `DB_USE_EMPTY=false` en seeddata is geïmporteerd.)*
 
 Na inloggen als eigenaar (`admin`) zie je het dashboard met overzicht van medewerkers, klanten, afspraken, producten, behandelingen, bestellingen en rapportages.
 

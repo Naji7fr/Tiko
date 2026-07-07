@@ -92,6 +92,22 @@ class MedewerkerOverzichtTest extends TestCase
         $response->assertSessionHasErrors(['email' => 'Deze e-mail bestaat al.']);
     }
 
+    public function test_medewerker_wordt_niet_toegevoegd_bij_naam_met_cijfers(): void
+    {
+        $specialisatie = SpecialisatieModel::where('naam', 'Fade')->first();
+
+        $response = $this->actingAs($this->admin)->post(route('medewerkers.store'), [
+            'voornaam' => 'Piet123',
+            'achternaam' => 'Jansen',
+            'email' => 'piet123@example.com',
+            'specialisatie_id' => $specialisatie->id,
+            'is_actief' => '1',
+        ]);
+
+        $response->assertSessionHasErrors('voornaam');
+        $this->assertDatabaseMissing('contact_gegevens', ['email' => 'piet123@example.com']);
+    }
+
     /**
      * Scenario: medewerker wordt succesvol gewijzigd
      * Home → overzicht → wijzigen → telefoon aanpassen → opslaan → zichtbaar in overzicht

@@ -1,18 +1,12 @@
 /**
  * medewerker.validation.js — Client-side validatie (HTML5 aanvulling).
- *
- * Werkt samen met server-side FormRequest validatie.
- * PSR-12 / duidelijke functienamen in camelCase (JavaScript conventie).
  */
 (function () {
     'use strict';
 
     const telefoonPattern = /^(?:\+31|0031|0)[1-9][0-9]{8}$/;
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const validatie = window.TikoFormValidatie;
 
-    /**
-     * Toont een client-side foutmelding bij een veld.
-     */
     function toonVeldFout(veldId, bericht) {
         const veld = document.getElementById(veldId);
         if (!veld) {
@@ -28,10 +22,12 @@
         }
     }
 
-    /**
-     * Verwijdert client-side foutmarkering van een veld.
-     */
     function wisVeldFout(veldId) {
+        if (validatie) {
+            validatie.wisVeldFout(document.getElementById(veldId));
+            return;
+        }
+
         const veld = document.getElementById(veldId);
         if (!veld) {
             return;
@@ -46,36 +42,53 @@
         }
     }
 
-    /**
-     * Valideert het volledige medewerkerformulier.
-     */
     function valideerMedewerkerFormulier(formulier) {
         let isGeldig = true;
 
         const voornaam = formulier.querySelector('#voornaam');
         const achternaam = formulier.querySelector('#achternaam');
+        const tussenvoegsel = formulier.querySelector('#tussenvoegsel');
         const email = formulier.querySelector('#email');
         const telefoon = formulier.querySelector('#telefoon');
         const specialisatie = formulier.querySelector('#specialisatie_id');
 
         wisVeldFout('voornaam');
         wisVeldFout('achternaam');
+        wisVeldFout('tussenvoegsel');
         wisVeldFout('email');
         wisVeldFout('telefoon');
 
-        if (!voornaam || voornaam.value.trim().length === 0) {
-            toonVeldFout('voornaam', 'Voornaam is verplicht.');
-            isGeldig = false;
-        }
+        if (validatie) {
+            if (!validatie.valideerNaam(voornaam, 'Voornaam')) {
+                isGeldig = false;
+            }
 
-        if (!achternaam || achternaam.value.trim().length === 0) {
-            toonVeldFout('achternaam', 'Achternaam is verplicht.');
-            isGeldig = false;
-        }
+            if (!validatie.valideerNaam(achternaam, 'Achternaam')) {
+                isGeldig = false;
+            }
 
-        if (!email || !emailPattern.test(email.value.trim())) {
-            toonVeldFout('email', 'Voer een geldig e-mailadres in.');
-            isGeldig = false;
+            if (!validatie.valideerOptioneleNaam(tussenvoegsel, 'Tussenvoegsel')) {
+                isGeldig = false;
+            }
+
+            if (!validatie.valideerEmail(email)) {
+                isGeldig = false;
+            }
+        } else {
+            if (!voornaam || voornaam.value.trim().length === 0) {
+                toonVeldFout('voornaam', 'Voornaam is verplicht.');
+                isGeldig = false;
+            }
+
+            if (!achternaam || achternaam.value.trim().length === 0) {
+                toonVeldFout('achternaam', 'Achternaam is verplicht.');
+                isGeldig = false;
+            }
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                toonVeldFout('email', 'Voer een geldig e-mailadres in.');
+                isGeldig = false;
+            }
         }
 
         if (telefoon && telefoon.value.trim() !== '' && !telefoonPattern.test(telefoon.value.trim())) {

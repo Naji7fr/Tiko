@@ -4,6 +4,7 @@
 @section('title', 'Medewerker wijzigen')
 
 @push('scripts')
+    <script src="{{ asset('js/form-validatie.js') }}" defer></script>
     <script src="{{ asset('js/medewerker/medewerker.validation.js') }}" defer></script>
 @endpush
 

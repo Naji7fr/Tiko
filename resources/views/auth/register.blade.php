@@ -22,35 +22,38 @@
                         Beheerders hebben een apart account.
                     </div>
 
-                    <form action="{{ route('register') }}" method="POST">
+                    <form id="register-form" action="{{ route('register') }}" method="POST">
                         @csrf
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="voornaam" class="form-label">Voornaam <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('voornaam') is-invalid @enderror"
-                                       id="voornaam" name="voornaam" value="{{ old('voornaam') }}" required autofocus>
+                                       id="voornaam" name="voornaam" value="{{ old('voornaam') }}" required autofocus maxlength="50">
                                 @error('voornaam')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div class="invalid-feedback d-none" data-client-error="voornaam"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="achternaam" class="form-label">Achternaam <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('achternaam') is-invalid @enderror"
-                                       id="achternaam" name="achternaam" value="{{ old('achternaam') }}" required>
+                                       id="achternaam" name="achternaam" value="{{ old('achternaam') }}" required maxlength="50">
                                 @error('achternaam')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div class="invalid-feedback d-none" data-client-error="achternaam"></div>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">E-mailadres <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                   id="email" name="email" value="{{ old('email') }}" placeholder="jouw@email.nl" required>
+                                   id="email" name="email" value="{{ old('email') }}" placeholder="jouw@email.nl" required maxlength="254">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <div class="invalid-feedback d-none" data-client-error="email"></div>
                         </div>
 
                         <div class="mb-3">
@@ -93,3 +96,8 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/form-validatie.js') }}" defer></script>
+    <script src="{{ asset('js/auth/register.validation.js') }}" defer></script>
+@endpush

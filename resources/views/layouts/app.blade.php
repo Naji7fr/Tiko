@@ -158,6 +158,15 @@
     </nav>
 
     <div class="content-wrapper @if(request()->routeIs('home')) content-wrapper--home @endif">
+        @if($gebruiktLegeDatabase ?? false)
+            <div class="alert alert-info rounded-0 mb-0 text-center py-2 border-0">
+                <small>
+                    <i class="fas fa-database me-1"></i>
+                    Lege database actief: <strong>{{ $actieveDatabaseNaam }}</strong>
+                    (geen seeddata — voeg zelf medewerkers toe)
+                </small>
+            </div>
+        @endif
         @yield('content')
     </div>
 

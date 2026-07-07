@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$useEmptyDatabase = filter_var(env('DB_USE_EMPTY', false), FILTER_VALIDATE_BOOL);
+
 return [
 
     /*
@@ -17,6 +19,25 @@ return [
     */
 
     'default' => env('DB_CONNECTION', 'sqlite'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lege database (schakelbaar via .env)
+    |--------------------------------------------------------------------------
+    |
+    | DB_USE_EMPTY=true  → gebruikt DB_EMPTY_DATABASE (standaard: toki_empty)
+    | DB_USE_EMPTY=false → gebruikt DB_DATABASE (standaard: toki)
+    |
+    | Schema: DB_EMPTY_SQL_PATH (standaard: database/sql/toki_empty.sql)
+    | Setup:  php database/setup_toki_empty.php
+    |
+    */
+
+    'use_empty_database' => $useEmptyDatabase,
+
+    'empty_database' => env('DB_EMPTY_DATABASE', 'toki_empty'),
+
+    'empty_sql_path' => env('DB_EMPTY_SQL_PATH', database_path('sql/toki_empty.sql')),
 
     /*
     |--------------------------------------------------------------------------
@@ -48,7 +69,9 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
+            'database' => $useEmptyDatabase
+                ? env('DB_EMPTY_DATABASE', 'toki_empty')
+                : env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),

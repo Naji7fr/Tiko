@@ -4,6 +4,7 @@ namespace App\Http\Requests\Eigenaar;
 
 use App\Models\Medewerker\ContactGegevensModel;
 use App\Services\Eigenaar\AccountService;
+use App\Support\ValidatieRegels;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -25,8 +26,8 @@ class UpdateAccountRequest extends FormRequest
         $account = $this->route('account');
 
         return [
-            'voornaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
-            'achternaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+            'voornaam' => ValidatieRegels::voornaam(),
+            'achternaam' => ValidatieRegels::achternaam(),
             'email' => [
                 'required',
                 'email',
@@ -65,13 +66,14 @@ class UpdateAccountRequest extends FormRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return [
-            'email.unique' => 'Dit e-mailadres is al in gebruik.',
-            'voornaam.regex' => 'Voornaam bevat ongeldige tekens.',
-            'achternaam.regex' => 'Achternaam bevat ongeldige tekens.',
-            'password.min' => 'Het wachtwoord moet minimaal 8 tekens bevatten.',
-            'password.confirmed' => 'De wachtwoorden komen niet overeen.',
-            'telefoon.regex' => 'Ongeldig telefoonnummer.',
-        ];
+        return array_merge(
+            ValidatieRegels::naamBerichten(),
+            ValidatieRegels::emailBerichten(),
+            [
+                'password.min' => 'Het wachtwoord moet minimaal 8 tekens bevatten.',
+                'password.confirmed' => 'De wachtwoorden komen niet overeen.',
+                'telefoon.regex' => 'Ongeldig telefoonnummer.',
+            ]
+        );
     }
 }

@@ -48,6 +48,36 @@ class KlantRegistratieTest extends TestCase
         ]);
     }
 
+    public function test_registratie_weigert_namen_met_cijfers(): void
+    {
+        $response = $this->from(route('register'))->post(route('register'), [
+            'voornaam' => 'Jan123',
+            'achternaam' => 'Jansen',
+            'email' => 'jan@klant.nl',
+            'password' => 'wachtwoord123',
+            'password_confirmation' => 'wachtwoord123',
+        ]);
+
+        $response->assertRedirect(route('register'));
+        $response->assertSessionHasErrors('voornaam');
+        $this->assertDatabaseMissing('users', ['email' => 'jan@klant.nl']);
+    }
+
+    public function test_registratie_weigert_ongeldig_emailadres(): void
+    {
+        $response = $this->from(route('register'))->post(route('register'), [
+            'voornaam' => 'Jan',
+            'achternaam' => 'Jansen',
+            'email' => 'geen-at-email',
+            'password' => 'wachtwoord123',
+            'password_confirmation' => 'wachtwoord123',
+        ]);
+
+        $response->assertRedirect(route('register'));
+        $response->assertSessionHasErrors('email');
+        $this->assertDatabaseMissing('users', ['email' => 'geen-at-email']);
+    }
+
     public function test_ingelogde_klant_heeft_geen_toegang_tot_medewerkerbeheer(): void
     {
         $user = User::factory()->create(['role' => 'klant', 'status' => 'Actief']);

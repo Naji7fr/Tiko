@@ -7,6 +7,7 @@ use App\Models\Medewerker\ContactGegevensModel;
 use App\Models\Medewerker\GebruikerModel;
 use App\Models\Klant;
 use App\Models\User;
+use App\Support\ValidatieRegels;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,19 +38,20 @@ class RegisterController extends Controller
     public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'voornaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
-            'achternaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+            'voornaam' => ValidatieRegels::voornaam(),
+            'achternaam' => ValidatieRegels::achternaam(),
             'email' => 'required|email|max:254|unique:users,email|unique:contact_gegevens,email',
             'telefoon' => ['nullable', 'string', 'max:25', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
             'password' => 'required|string|min:8|confirmed',
-        ], [
-            'email.unique' => 'Dit e-mailadres is al in gebruik.',
-            'voornaam.regex' => 'Voornaam bevat ongeldige tekens.',
-            'achternaam.regex' => 'Achternaam bevat ongeldige tekens.',
-            'password.min' => 'Het wachtwoord moet minimaal 8 tekens bevatten.',
-            'password.confirmed' => 'De wachtwoorden komen niet overeen.',
-            'telefoon.regex' => 'Ongeldig telefoonnummer.',
-        ]);
+        ], array_merge(
+            ValidatieRegels::naamBerichten(),
+            ValidatieRegels::emailBerichten(),
+            [
+                'password.min' => 'Het wachtwoord moet minimaal 8 tekens bevatten.',
+                'password.confirmed' => 'De wachtwoorden komen niet overeen.',
+                'telefoon.regex' => 'Ongeldig telefoonnummer.',
+            ]
+        ));
 
         $username = $this->generateUniqueUsername($validated['voornaam'], $validated['achternaam']);
 

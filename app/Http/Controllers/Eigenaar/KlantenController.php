@@ -10,6 +10,7 @@ use App\Models\Medewerker\GebruikerModel;
 use App\Models\Medewerker\TechnischeLogModel;
 use App\Models\User;
 use App\Services\Eigenaar\KlantenService;
+use App\Support\ValidatieRegels;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,8 +84,8 @@ class KlantenController extends Controller
     {
         try {
             $validated = $request->validate([
-                'voornaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
-                'achternaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+                'voornaam' => ValidatieRegels::voornaam(),
+                'achternaam' => ValidatieRegels::achternaam(),
                 'email' => ['required', 'email', 'max:254', 'unique:contact_gegevens,email', 'unique:users,email'],
                 'telefoon' => ['nullable', 'string', 'max:25', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
                 'straat' => ['nullable', 'string', 'max:100', 'required_with:huisnummer,postcode,plaats'],
@@ -92,7 +93,13 @@ class KlantenController extends Controller
                 'postcode' => ['nullable', 'string', 'max:10', 'required_with:straat,huisnummer,plaats', 'regex:/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/'],
                 'plaats' => ['nullable', 'string', 'max:50', 'required_with:straat,huisnummer,postcode'],
                 'land' => ['nullable', 'string', 'max:50'],
-            ]);
+            ], array_merge(
+                ValidatieRegels::naamBerichten(),
+                ValidatieRegels::emailBerichten(),
+                [
+                    'telefoon.regex' => 'Ongeldig telefoonnummer.',
+                ]
+            ));
 
             DB::transaction(function () use ($validated): void {
                 $adresId = null;
@@ -216,8 +223,8 @@ class KlantenController extends Controller
             }
 
             $validated = $request->validate([
-                'voornaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
-                'achternaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+                'voornaam' => ValidatieRegels::voornaam(),
+                'achternaam' => ValidatieRegels::achternaam(),
                 'email' => $emailRegels,
                 'telefoon' => ['nullable', 'string', 'max:25', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
                 'straat' => ['nullable', 'string', 'max:100', 'required_with:huisnummer,postcode,plaats'],
@@ -225,7 +232,13 @@ class KlantenController extends Controller
                 'postcode' => ['nullable', 'string', 'max:10', 'required_with:straat,huisnummer,plaats', 'regex:/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/'],
                 'plaats' => ['nullable', 'string', 'max:50', 'required_with:straat,huisnummer,postcode'],
                 'land' => ['nullable', 'string', 'max:50'],
-            ]);
+            ], array_merge(
+                ValidatieRegels::naamBerichten(),
+                ValidatieRegels::emailBerichten(),
+                [
+                    'telefoon.regex' => 'Ongeldig telefoonnummer.',
+                ]
+            ));
 
             DB::transaction(function () use ($klantModel, $gebruiker, $contactGegevens, $validated): void {
                 $volledigeNaam = trim($validated['voornaam'] . ' ' . $validated['achternaam']);

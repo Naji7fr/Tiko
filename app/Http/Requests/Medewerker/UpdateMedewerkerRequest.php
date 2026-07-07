@@ -4,6 +4,7 @@ namespace App\Http\Requests\Medewerker;
 
 use App\Http\Requests\Medewerker\Concerns\ValideertMedewerkerBeschikbaarheid;
 use App\Models\Medewerker\MedewerkerModel;
+use App\Support\ValidatieRegels;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -47,9 +48,9 @@ class UpdateMedewerkerRequest extends FormRequest
         ];
 
         return array_merge([
-            'voornaam' => 'required|string|max:50',
-            'tussenvoegsel' => 'nullable|string|max:20',
-            'achternaam' => 'required|string|max:50',
+            'voornaam' => ValidatieRegels::voornaam(),
+            'tussenvoegsel' => ValidatieRegels::tussenvoegsel(),
+            'achternaam' => ValidatieRegels::achternaam(),
             'email' => $emailRule,
             'telefoon' => $telefoonRules,
             'specialisatie_id' => 'required|exists:specialisaties,id',
@@ -67,10 +68,14 @@ class UpdateMedewerkerRequest extends FormRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return [
-            'email.unique' => 'Deze e-mail bestaat al.',
-            'telefoon.unique' => 'Dit telefoonnummer bestaat al.',
-            'telefoon.regex' => 'Ongeldig telefoonnummer.',
-        ];
+        return array_merge(
+            ValidatieRegels::naamBerichten(),
+            ValidatieRegels::emailBerichten(),
+            [
+                'email.unique' => 'Deze e-mail bestaat al.',
+                'telefoon.unique' => 'Dit telefoonnummer bestaat al.',
+                'telefoon.regex' => 'Ongeldig telefoonnummer.',
+            ]
+        );
     }
 }

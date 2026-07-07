@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Klant;
 use App\Http\Controllers\Controller;
 use App\Models\Klant;
 use App\Services\Klant\KlantAccountService;
+use App\Support\ValidatieRegels;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -92,16 +93,22 @@ class AccountController extends Controller
             }
 
             $validated = $request->validate([
-                'voornaam' => ['required', 'string', 'max:255'],
-                'achternaam' => ['required', 'string', 'max:255'],
+                'voornaam' => ValidatieRegels::voornaam(255),
+                'achternaam' => ValidatieRegels::achternaam(255),
                 'email' => $emailRules,
-                'telefoon' => ['nullable', 'string', 'max:25'],
+                'telefoon' => ['nullable', 'string', 'max:25', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
                 'straat' => ['nullable', 'string', 'max:100'],
                 'huisnummer' => ['nullable', 'string', 'max:10'],
                 'postcode' => ['nullable', 'string', 'max:10'],
                 'plaats' => ['nullable', 'string', 'max:50'],
                 'land' => ['nullable', 'string', 'max:50'],
-            ]);
+            ], array_merge(
+                ValidatieRegels::naamBerichten(),
+                ValidatieRegels::emailBerichten(),
+                [
+                    'telefoon.regex' => 'Ongeldig telefoonnummer.',
+                ]
+            ));
 
             $user->forceFill([
                 'voornaam' => $validated['voornaam'],

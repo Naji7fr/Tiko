@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Medewerker\MedewerkerModel;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -26,5 +27,8 @@ class AppServiceProvider extends ServiceProvider
         Route::bind('medewerker', function (string $waarde): MedewerkerModel {
             return MedewerkerModel::query()->findOrFail($waarde);
         });
+
+        View::share('gebruiktLegeDatabase', (bool) config('database.use_empty_database'));
+        View::share('actieveDatabaseNaam', config('database.connections.mysql.database'));
     }
 }

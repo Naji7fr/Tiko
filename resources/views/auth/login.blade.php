@@ -68,6 +68,21 @@
                     <p class="text-center text-muted small mb-0 mt-3">
                         Nog geen account? <a href="{{ route('register') }}" class="fw-bold">Registreer als klant</a>
                     </p>
+
+                    @if(!($gebruiktLegeDatabase ?? false))
+                        <div class="alert alert-secondary mt-3 mb-0 small">
+                            <strong><i class="fas fa-user-shield me-2"></i>Eigenaar inloggen (demo)</strong>
+                            <div class="mt-2">
+                                <div><strong>E-mail:</strong> admin@tiko.nl</div>
+                                <div><strong>Wachtwoord:</strong> password</div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-warning mt-3 mb-0 small">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Lege database actief — er is geen demo-eigenaar. Maak eerst een admin-account aan.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

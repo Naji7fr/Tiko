@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Medewerker;
 
 use App\Http\Requests\Medewerker\Concerns\ValideertMedewerkerBeschikbaarheid;
+use App\Support\ValidatieRegels;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -27,9 +28,9 @@ class StoreMedewerkerRequest extends FormRequest
     public function rules(): array
     {
         return array_merge([
-            'voornaam' => 'required|string|max:50',
-            'tussenvoegsel' => 'nullable|string|max:20',
-            'achternaam' => 'required|string|max:50',
+            'voornaam' => ValidatieRegels::voornaam(),
+            'tussenvoegsel' => ValidatieRegels::tussenvoegsel(),
+            'achternaam' => ValidatieRegels::achternaam(),
             'email' => 'required|email|max:254|unique:contact_gegevens,email',
             'telefoon' => [
                 'nullable',
@@ -51,13 +52,17 @@ class StoreMedewerkerRequest extends FormRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return [
-            'email.unique' => 'Deze e-mail bestaat al.',
-            'telefoon.unique' => 'Dit telefoonnummer bestaat al.',
-            'telefoon.regex' => 'Ongeldig telefoonnummer.',
-            'voornaam.required' => 'Voornaam is verplicht.',
-            'achternaam.required' => 'Achternaam is verplicht.',
-            'specialisatie_id.required' => 'Selecteer een specialisatie.',
-        ];
+        return array_merge(
+            ValidatieRegels::naamBerichten(),
+            ValidatieRegels::emailBerichten(),
+            [
+                'email.unique' => 'Deze e-mail bestaat al.',
+                'telefoon.unique' => 'Dit telefoonnummer bestaat al.',
+                'telefoon.regex' => 'Ongeldig telefoonnummer.',
+                'voornaam.required' => 'Voornaam is verplicht.',
+                'achternaam.required' => 'Achternaam is verplicht.',
+                'specialisatie_id.required' => 'Selecteer een specialisatie.',
+            ]
+        );
     }
 }
