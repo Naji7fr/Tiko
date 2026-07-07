@@ -391,4 +391,133 @@ class AfspraakCrudTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_create_formulier_toont_dynamische_planning_velden(): void
+    {
+        $response = $this->actingAs($this->medewerkerUser)->get(route('afspraken.create'));
+
+        $response->assertOk();
+        $response->assertSee('Kies een behandeling');
+        $response->assertSee('Kies eerst een specialist', false);
+        $response->assertSee('afspraak-planning.js', false);
+    }
+
+    public function test_beschikbare_medewerkers_worden_gefilterd_op_behandeling(): void
+    {
+        $fadeMedewerker = $this->maakMedewerker('fade-specialist@example.com');
+        $baardSpecialisatie = SpecialisatieModel::where('naam', 'Baard')->first();
+        $baardMedewerker = $this->maakMedewerkerMetSpecialisatie('baard-specialist@example.com', $baardSpecialisatie->id);
+
+        $fadeBehandeling = \DB::table('behandelingen')->insertGetId([
+            'naam' => 'Fade + lijn',
+            'duur_minuten' => 45,
+            'prijs' => 32.50,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $baardBehandeling = \DB::table('behandelingen')->insertGetId([
+            'naam' => 'Baard trimmen',
+            'duur_minuten' => 20,
+            'prijs' => 17.50,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $fadeResponse = $this->actingAs($this->medewerkerUser)->getJson(route('afspraken.beschikbare-medewerkers', [
+            'behandeling_id' => $fadeBehandeling,
+        ]));
+
+        $fadeResponse->assertOk();
+        $fadeIds = collect($fadeResponse->json('medewerkers'))->pluck('id')->all();
+        $this->assertContains($fadeMedewerker->id, $fadeIds);
+        $this->assertNotContains($baardMedewerker->id, $fadeIds);
+
+        $baardResponse = $this->actingAs($this->medewerkerUser)->getJson(route('afspraken.beschikbare-medewerkers', [
+            'behandeling_id' => $baardBehandeling,
+        ]));
+
+        $baardResponse->assertOk();
+        $baardIds = collect($baardResponse->json('medewerkers'))->pluck('id')->all();
+        $this->assertContains($baardMedewerker->id, $baardIds);
+        $this->assertNotContains($fadeMedewerker->id, $baardIds);
+    }
+
+    public function test_beschikbare_datums_endpoint_geeft_toekomstige_dagen(): void
+    {
+        $medewerker = $this->maakMedewerker('beschikbaar@example.com');
+        $behandeling = $this->maakBehandeling();
+        $datum = $this->volgendeWerkdag(2);
+
+        $response = $this->actingAs($this->medewerkerUser)->getJson(route('afspraken.beschikbare-datums', [
+            'behandeling_id' => $behandeling,
+            'medewerker_id' => $medewerker->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['datums']);
+        $this->assertContains($datum, $response->json('datums'));
+    }
+
+    public function test_beschikbare_tijden_sluiten_geboekte_momenten_uit(): void
+    {
+        $klant = $this->maakKlant('beschikbaar-tijd@example.com');
+        $medewerker = $this->maakMedewerker('beschikbaar-tijd-med@example.com');
+        $behandeling = $this->maakBehandeling();
+        $datum = $this->volgendeWerkdag(3);
+
+        $this->maakAfspraak($klant->klant()->first()->id, $medewerker->id, $behandeling, $datum, '10:00:00');
+
+        $response = $this->actingAs($this->medewerkerUser)->getJson(route('afspraken.beschikbare-tijden', [
+            'behandeling_id' => $behandeling,
+            'medewerker_id' => $medewerker->id,
+            'datum' => $datum,
+        ]));
+
+        $response->assertOk();
+        $tijden = $response->json('tijden');
+        $this->assertNotContains('10:00', $tijden);
+        $this->assertNotEmpty($tijden);
+    }
+
+    public function test_beschikbare_tijden_melding_bij_geen_vrije_momenten(): void
+    {
+        $medewerker = $this->maakMedewerker('geen-momenten@example.com');
+        $behandeling = $this->maakBehandeling();
+
+        $zondag = now()->addWeek()->startOfWeek()->addDays(6)->toDateString();
+
+        $response = $this->actingAs($this->medewerkerUser)->getJson(route('afspraken.beschikbare-tijden', [
+            'behandeling_id' => $behandeling,
+            'medewerker_id' => $medewerker->id,
+            'datum' => $zondag,
+        ]));
+
+        $response->assertOk();
+        $response->assertJson([
+            'tijden' => [],
+            'melding' => 'Geen beschikbare tijden gevonden',
+        ]);
+    }
+
+    private function maakMedewerkerMetSpecialisatie(string $email, int $specialisatieId): MedewerkerModel
+    {
+        $contact = ContactGegevensModel::create([
+            'email' => $email,
+            'telefoon' => '0698765432',
+        ]);
+
+        $gebruiker = GebruikerModel::create([
+            'contact_gegevens_id' => $contact->id,
+            'voornaam' => 'Spec',
+            'achternaam' => 'Tester',
+            'volledig_naam' => 'Spec Tester',
+        ]);
+
+        return MedewerkerModel::create([
+            'gebruiker_id' => $gebruiker->id,
+            'specialisatie_id' => $specialisatieId,
+            'is_actief' => true,
+        ]);
+    }
 }

@@ -2,11 +2,15 @@
 
 @section('title', 'Nieuwe afspraak')
 
+@push('scripts')
+    <script src="{{ asset('js/afspraken/afspraak-planning.js') }}" defer></script>
+@endpush
+
 @section('content')
 <div class="page-header">
     <div class="container">
         <h1><i class="fas fa-calendar-plus me-3"></i>Nieuwe afspraak</h1>
-        <p class="mb-0 mt-2 opacity-90">Kies klant, behandeling, specialist, datum en tijd.</p>
+        <p class="mb-0 mt-2 opacity-90">Kies behandeling, specialist, beschikbare datum en starttijd.</p>
     </div>
 </div>
 
@@ -42,40 +46,7 @@
                     </div>
                 @endif
 
-                <div class="col-md-6">
-                    <label for="behandeling_id" class="form-label">Behandeling</label>
-                    <select name="behandeling_id" id="behandeling_id" class="form-select" required>
-                        <option value="">Kies een behandeling</option>
-                        @foreach($behandelingen as $behandeling)
-                            <option value="{{ $behandeling->id }}" {{ old('behandeling_id') == $behandeling->id ? 'selected' : '' }}>{{ $behandeling->naam }} ({{ $behandeling->duur_minuten }} min)</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="medewerker_id" class="form-label">Specialist</label>
-                    <select name="medewerker_id" id="medewerker_id" class="form-select" required>
-                        <option value="">Kies een specialist</option>
-                        @foreach($medewerkers as $medewerker)
-                            <option value="{{ $medewerker->id }}" {{ old('medewerker_id') == $medewerker->id ? 'selected' : '' }}>
-                                {{ $medewerker->gebruiker?->volledig_naam ?? 'Onbekend' }}
-                                @if($medewerker->specialisatie?->naam)
-                                    ({{ $medewerker->specialisatie->naam }})
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="afspraak_datum" class="form-label">Datum</label>
-                    <input type="date" name="afspraak_datum" id="afspraak_datum" class="form-control" min="{{ now()->toDateString() }}" value="{{ old('afspraak_datum', now()->toDateString()) }}" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="afspraak_tijd" class="form-label">Starttijd</label>
-                    <input type="time" name="afspraak_tijd" id="afspraak_tijd" class="form-control" min="09:00" max="19:59" value="{{ old('afspraak_tijd') }}" required>
-                </div>
+                @include('afspraken.partials.planning-form')
 
                 <div class="col-12">
                     <label for="opmerking" class="form-label">Opmerking</label>

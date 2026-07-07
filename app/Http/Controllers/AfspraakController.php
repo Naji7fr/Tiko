@@ -9,8 +9,11 @@ use App\Models\Behandeling;
 use App\Models\Klant;
 use App\Models\Medewerker\MedewerkerModel;
 use App\Models\Medewerker\TechnischeLogModel;
+use App\Services\Afspraak\AfspraakPlanningService;
 use App\Services\Medewerker\MedewerkerBeschikbaarheidService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -18,7 +21,8 @@ use Illuminate\View\View;
 class AfspraakController extends Controller
 {
     public function __construct(
-        private readonly MedewerkerBeschikbaarheidService $beschikbaarheidService
+        private readonly MedewerkerBeschikbaarheidService $beschikbaarheidService,
+        private readonly AfspraakPlanningService $planningService
     ) {}
 
     /** GET /afspraken — Volledige planning voor medewerker en eigenaar. */
@@ -55,6 +59,78 @@ class AfspraakController extends Controller
             : null;
 
         return view('afspraken.create', compact('behandelingen', 'medewerkers', 'klanten', 'eigenKlant'));
+    }
+
+    /** GET /afspraken/beschikbare-medewerkers — Specialisten voor gekozen behandeling. */
+    public function beschikbareMedewerkers(Request $request): JsonResponse
+    {
+        abort_unless(auth()->check(), 403);
+
+        $behandelingId = (int) $request->query('behandeling_id', 0);
+
+        if ($behandelingId <= 0) {
+            return response()->json(['medewerkers' => []]);
+        }
+
+        $medewerkers = $this->planningService
+            ->haalMedewerkersVoorBehandeling($behandelingId)
+            ->map(fn (MedewerkerModel $medewerker): array => [
+                'id' => $medewerker->id,
+                'naam' => $medewerker->gebruiker?->volledig_naam ?? 'Onbekend',
+                'specialisatie' => $medewerker->specialisatie?->naam,
+            ])
+            ->values();
+
+        return response()->json(['medewerkers' => $medewerkers]);
+    }
+
+    /** GET /afspraken/beschikbare-datums — Beschikbare data voor specialist + behandeling. */
+    public function beschikbareDatums(Request $request): JsonResponse
+    {
+        abort_unless(auth()->check(), 403);
+
+        $behandelingId = (int) $request->query('behandeling_id', 0);
+        $medewerkerId = (int) $request->query('medewerker_id', 0);
+        $ignoreAfspraakId = $request->query('afspraak_id') ? (int) $request->query('afspraak_id') : null;
+
+        if ($behandelingId <= 0 || $medewerkerId <= 0) {
+            return response()->json(['datums' => []]);
+        }
+
+        $datums = $this->planningService->haalBeschikbareDatums($medewerkerId, $behandelingId, $ignoreAfspraakId);
+
+        return response()->json([
+            'datums' => $datums,
+            'melding' => $datums === [] ? 'Geen beschikbare tijden gevonden' : null,
+        ]);
+    }
+
+    /** GET /afspraken/beschikbare-tijden — Beschikbare starttijden op gekozen datum. */
+    public function beschikbareTijden(Request $request): JsonResponse
+    {
+        abort_unless(auth()->check(), 403);
+
+        $behandelingId = (int) $request->query('behandeling_id', 0);
+        $medewerkerId = (int) $request->query('medewerker_id', 0);
+        $datum = (string) $request->query('datum', '');
+        $ignoreAfspraakId = $request->query('afspraak_id') ? (int) $request->query('afspraak_id') : null;
+
+        if ($behandelingId <= 0 || $medewerkerId <= 0 || $datum === '') {
+            return response()->json(['tijden' => []]);
+        }
+
+        $behandeling = Behandeling::query()->findOrFail($behandelingId);
+        $tijden = $this->planningService->haalBeschikbareTijden(
+            $medewerkerId,
+            $datum,
+            $behandeling->duur_minuten,
+            $ignoreAfspraakId
+        );
+
+        return response()->json([
+            'tijden' => $tijden,
+            'melding' => $tijden === [] ? 'Geen beschikbare tijden gevonden' : null,
+        ]);
     }
 
     /** POST /afspraken — Nieuwe afspraak opslaan. */

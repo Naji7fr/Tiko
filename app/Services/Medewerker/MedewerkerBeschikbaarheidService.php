@@ -211,13 +211,17 @@ class MedewerkerBeschikbaarheidService
         return $samenvattingen;
     }
 
-    public function isBeschikbaarOp(int $medewerkerId, string $datum, string $tijd): bool
+    /**
+     * Werkvenster van een medewerker op een kalenderdag.
+     *
+     * @return array{start: string, eind: string}|null
+     */
+    public function haalDagVenster(int $medewerkerId, string $datum): ?array
     {
         $dag = Carbon::parse($datum)->dayOfWeekIso;
-        $tijdNorm = substr($tijd, 0, 5);
 
         if (! $this->tabelBestaat()) {
-            return $this->fallbackBeschikbaar($dag, $tijdNorm);
+            return $this->fallbackDagVenster($dag);
         }
 
         $schema = MedewerkerBeschikbaarheidModel::query()
@@ -226,30 +230,44 @@ class MedewerkerBeschikbaarheidService
             ->first();
 
         if ($schema === null) {
-            return $this->fallbackBeschikbaar($dag, $tijdNorm);
+            return $this->fallbackDagVenster($dag);
         }
 
         if (! $schema->is_beschikbaar) {
+            return null;
+        }
+
+        return [
+            'start' => substr((string) $schema->start_tijd, 0, 5),
+            'eind' => substr((string) $schema->eind_tijd, 0, 5),
+        ];
+    }
+
+    public function isBeschikbaarOp(int $medewerkerId, string $datum, string $tijd): bool
+    {
+        $venster = $this->haalDagVenster($medewerkerId, $datum);
+
+        if ($venster === null) {
             return false;
         }
 
-        $start = substr((string) $schema->start_tijd, 0, 5);
-        $eind = substr((string) $schema->eind_tijd, 0, 5);
+        $tijdNorm = substr($tijd, 0, 5);
 
-        return $tijdNorm >= $start && $tijdNorm < $eind;
+        return $tijdNorm >= $venster['start'] && $tijdNorm < $venster['eind'];
     }
 
-    private function fallbackBeschikbaar(int $dag, string $tijd): bool
+    /** @return array{start: string, eind: string}|null */
+    private function fallbackDagVenster(int $dag): ?array
     {
         if ($dag === 7) {
-            return false;
+            return null;
         }
 
         if ($dag === 6) {
-            return $tijd >= '08:00' && $tijd < '17:00';
+            return ['start' => '08:00', 'eind' => '17:00'];
         }
 
-        return $tijd >= '09:00' && $tijd < '20:00';
+        return ['start' => '09:00', 'eind' => '20:00'];
     }
 
     private function normaliseerTijd(string $tijd): string

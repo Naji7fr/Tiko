@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/klant/instellingen', [KlantAccountController::class, 'settings'])->name('klant.instellingen');
 
+    Route::get('/afspraken/beschikbare-medewerkers', [AfspraakController::class, 'beschikbareMedewerkers'])->name('afspraken.beschikbare-medewerkers');
+    Route::get('/afspraken/beschikbare-datums', [AfspraakController::class, 'beschikbareDatums'])->name('afspraken.beschikbare-datums');
+    Route::get('/afspraken/beschikbare-tijden', [AfspraakController::class, 'beschikbareTijden'])->name('afspraken.beschikbare-tijden');
     Route::resource('afspraken', AfspraakController::class)->parameters([
         'afspraken' => 'afspraak',
     ]);
