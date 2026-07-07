@@ -97,7 +97,7 @@ class KlantRegistratieTest extends TestCase
         $response = $this->actingAs($user)->get(route('klant.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Mijn account');
+        $response->assertSee('Klant Overzicht');
         $response->assertSee('Piet Pietersen');
     }
 

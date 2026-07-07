@@ -15,7 +15,7 @@
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
-                <form method="POST" action="{{ route('account.details.destroy') }}" class="d-inline">
+                <form method="POST" action="{{ route('klant.overzicht.destroy') }}" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">

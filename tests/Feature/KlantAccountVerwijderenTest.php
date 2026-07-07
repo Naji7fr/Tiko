@@ -42,7 +42,7 @@ class KlantAccountVerwijderenTest extends TestCase
             'gebruiker_id' => $gebruiker->id,
         ]);
 
-        $response = $this->actingAs($user)->delete(route('account.details.destroy'));
+        $response = $this->actingAs($user)->delete(route('klant.overzicht.destroy'));
 
         $response->assertRedirect(route('home'));
         $response->assertSessionHas('status', 'Je account is verwijderd.');
@@ -66,7 +66,7 @@ class KlantAccountVerwijderenTest extends TestCase
             'status' => 'Actief',
         ]);
 
-        $response = $this->actingAs($user)->delete(route('account.details.destroy'));
+        $response = $this->actingAs($user)->delete(route('klant.overzicht.destroy'));
 
         $response->assertForbidden();
         $this->assertAuthenticatedAs($user);

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Update account details')
+@section('title', 'Klant Overzicht bewerken')
 
 @section('content')
 <div class="container py-5" style="padding-top: 6rem;">
@@ -11,15 +11,15 @@
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
                         <div>
                             <span class="text-uppercase text-muted small fw-semibold">Update details</span>
-                            <h1 class="h3 mb-2">Wijzig je accountgegevens</h1>
+                            <h1 class="h3 mb-2">Wijzig je klantgegevens</h1>
                             <p class="text-muted mb-0">Werk hier je naam, e-mail, telefoon en adres bij.</p>
                         </div>
-                        <a href="{{ route('account.details') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('klant.overzicht') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Terug naar details
                         </a>
                     </div>
 
-                    <form method="POST" action="{{ route('account.details.update') }}" class="row g-4">
+                    <form method="POST" action="{{ route('klant.overzicht.update') }}" class="row g-4">
                         @csrf
                         @method('PUT')
 
@@ -86,7 +86,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-check me-2"></i>Save changes
                             </button>
-                            <a href="{{ route('account.details') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('klant.overzicht') }}" class="btn btn-outline-secondary">
                                 Annuleren
                             </a>
                         </div>

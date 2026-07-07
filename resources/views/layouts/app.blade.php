@@ -97,7 +97,7 @@
                         @elseif(Auth::user()->isKlant())
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('klant.*') ? 'active' : '' }}" href="{{ route('klant.dashboard') }}">
-                                    <i class="fas fa-user me-1"></i>Mijn account
+                                    <i class="fas fa-user me-1"></i>Klant Overzicht
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -124,8 +124,8 @@
                                 </li>
                                 <li><hr class="dropdown-divider my-2"></li>
                                 <li>
-                                    <a class="dropdown-item rounded-2" href="{{ route('account.details') }}">
-                                        <i class="fas fa-circle-info me-2"></i>Account details
+                                    <a class="dropdown-item rounded-2" href="{{ route('klant.overzicht') }}">
+                                        <i class="fas fa-circle-info me-2"></i>Klant Overzicht
                                     </a>
                                 </li>
                                 <li>

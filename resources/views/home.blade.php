@@ -268,7 +268,7 @@
                         </a>
                     @elseif(Auth::user()->isKlant())
                         <a href="{{ route('klant.dashboard') }}" class="btn btn-outline-gold btn-lg">
-                            <i class="fas fa-user me-2"></i>Mijn account
+                            <i class="fas fa-user me-2"></i>Klant Overzicht
                         </a>
                     @endif
                 @else

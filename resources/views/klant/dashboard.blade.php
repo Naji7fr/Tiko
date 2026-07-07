@@ -1,12 +1,12 @@
 {{-- klant.view — Klant-dashboard (Mijn account) --}}
 @extends('layouts.app')
 
-@section('title', 'Mijn account')
+@section('title', 'Klant Overzicht')
 
 @section('content')
 <div class="page-header">
     <div class="container">
-        <h1><i class="fas fa-user me-3"></i>Mijn account</h1>
+        <h1><i class="fas fa-user me-3"></i>Klant Overzicht</h1>
         <p class="mb-0 mt-2 opacity-90">Welkom terug, {{ $user->voornaam ?? $user->name }}!</p>
     </div>
 </div>
