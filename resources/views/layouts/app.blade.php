@@ -67,6 +67,11 @@
                                     <i class="fas fa-box me-1"></i>Producten
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('eigenaar.klanten.*') ? 'active' : '' }}" href="{{ route('eigenaar.klanten.index') }}">
+                                    <i class="fas fa-user-friends me-1"></i>Klant overzicht
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-cog me-1"></i>Beheer

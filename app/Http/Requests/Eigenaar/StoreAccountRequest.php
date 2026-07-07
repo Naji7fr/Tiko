@@ -22,10 +22,10 @@ class StoreAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'voornaam' => 'required|string|max:255',
-            'achternaam' => 'required|string|max:255',
+            'voornaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+            'achternaam' => ['required', 'string', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
             'email' => 'required|email|max:255|unique:users,email',
-            'telefoon' => ['nullable', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
+            'telefoon' => ['nullable', 'string', 'max:25', 'regex:/^(?:\+31|0031|0)[1-9][0-9]{8}$/'],
             'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in(AccountService::BEHEER_ROLLEN)],
             'status' => ['required', Rule::in(['Actief', 'Inactief'])],
@@ -50,6 +50,8 @@ class StoreAccountRequest extends FormRequest
     {
         return [
             'email.unique' => 'Dit e-mailadres is al in gebruik.',
+            'voornaam.regex' => 'Voornaam bevat ongeldige tekens.',
+            'achternaam.regex' => 'Achternaam bevat ongeldige tekens.',
             'password.min' => 'Het wachtwoord moet minimaal 8 tekens bevatten.',
             'password.confirmed' => 'De wachtwoorden komen niet overeen.',
             'telefoon.regex' => 'Ongeldig telefoonnummer.',

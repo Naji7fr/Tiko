@@ -58,6 +58,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('eigenaar')->name('eigenaar.')
     Route::get('/rapportages', [EigenaarDashboardController::class, 'rapportages'])->name('rapportages');
     Route::resource('accounts', EigenaarAccountController::class)->except(['show']);
     Route::get('/klanten', [KlantenController::class, 'index'])->name('klanten.index');
+    Route::get('/klanten/toevoegen', [KlantenController::class, 'create'])->name('klanten.create');
+    Route::post('/klanten', [KlantenController::class, 'store'])->name('klanten.store');
+    Route::get('/klanten/{klant}/bewerken', [KlantenController::class, 'edit'])->name('klanten.edit');
+    Route::put('/klanten/{klant}', [KlantenController::class, 'update'])->name('klanten.update');
+    Route::delete('/klanten/{klant}', [KlantenController::class, 'destroy'])->name('klanten.destroy');
     // Placeholder-modules (behandelingen, …) — nog in ontwikkeling
     Route::get('/{module}', [EigenaarDashboardController::class, 'modulePlaceholder'])
         ->where('module', 'behandelingen|bestellingen')

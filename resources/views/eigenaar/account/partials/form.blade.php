@@ -11,7 +11,8 @@
                        name="voornaam"
                        value="{{ old('voornaam', $account->voornaam ?? '') }}"
                        required
-                       maxlength="255">
+                      maxlength="50"
+                      pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s\-\.'']+">
                 @error('voornaam')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">
@@ -22,7 +23,8 @@
                        name="achternaam"
                        value="{{ old('achternaam', $account->achternaam ?? '') }}"
                        required
-                       maxlength="255">
+                      maxlength="50"
+                      pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s\-\.'']+">
                 @error('achternaam')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">
@@ -43,7 +45,8 @@
                        id="telefoon"
                        name="telefoon"
                        value="{{ old('telefoon', $telefoon ?? '') }}"
-                       maxlength="20"
+                      maxlength="25"
+                      pattern="^(?:\+31|0031|0)[1-9][0-9]{8}$"
                        placeholder="0612345678">
                 @error('telefoon')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
